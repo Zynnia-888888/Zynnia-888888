@@ -15,7 +15,7 @@
             background-size: 20px 20px; color: #2b1f1d;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; padding: 20px;
-            overflow-x: hidden; /* 防止全屏刷屏时出现左右滚动条 */
+            overflow-x: hidden; /* 彻底防止横向滚动条 */
         }
         .container {
             width: 100%; max-width: 380px; background: #fffdf9;
@@ -99,12 +99,12 @@
         .sticks-shaking .stick { animation: stickBumpy 0.35s ease-in-out infinite; }
         .sticks-shaking .stick:nth-child(even) { animation-delay: 0.1s; }
 
-        @keyframes 牌飞出 {
+        @keyframes signFlyOut {
             0% { bottom: 110px; opacity: 0; transform: scale(0.6) rotate(-45deg); }
             60% { bottom: 230px; opacity: 1; transform: scale(1.1) rotate(15deg); }
             100% { bottom: 190px; opacity: 1; transform: scale(1) rotate(5deg); }
         }
-        .fly-out-anim { display: block !important; animation: 牌飞出 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .fly-out-anim { display: block !important; animation: signFlyOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
 
         /* 全屏均匀分布的飘字动画 */
         @keyframes textFloatUp {
@@ -114,10 +114,11 @@
             100% { transform: translateY(-220px) scale(0.95); opacity: 0; }
         }
         .floating-text {
-            position: fixed; /* 改为fixed实现真正全屏均匀刷屏 */
+            position: fixed;
             color: #cc4c33; font-weight: 900; font-size: 18px;
             text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #2b1f1d;
-            pointer-events: none; z-index: 999;
+            pointer-events: none; /* 关键：防止阻挡按钮点击 */
+            z-index: 999;
             animation: textFloatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
             display: flex; align-items: center; gap: 4px;
             white-space: nowrap;
@@ -194,3 +195,250 @@
         "Lilly": "赏心悦目", "DM": "洗心革面", "瓜果市场": "硕果累累", "明珠": "璀璨夺目",
         "银行取钱": "财源广进", "二楼中超": "丰衣足食", "Lidl": "满载而归"
     };
+
+    const signTags = {
+        "请假休息": "【奉天承运·超级大吉签】", "宿舍躺平": "【御赐免死·极致松弛签】", "随便转转": "【有缘相见·随缘锦鲤签】",
+        "公园散步": "【吸收天地灵气·上上签】", "巡视果园": "【硕果累累·元气满满签】", "IDEA": "【活力四射·多巴胺上等签】",
+        "老Maxi": "【稳如泰山·闭眼买好运签】", "新Maxi": "【开拓疆土·惊喜盲盒签】", "Lilly": "【审美爆发·优雅贵气签】",
+        "DM": "【精致生活·自律之神签】", "瓜果市场": "【人间烟火·朝气蓬勃签】", "明珠": "【家乡温暖·万事如意签】",
+        "银行取钱": "【财神显灵·吸金暴富签】", "二楼中超": "【饕餮盛宴·大饱口福签】", "Lidl": "【通关得胜·满载而归签】"
+    };
+
+    const poolWords = [
+        { text: "功德 +1 🌟", type: "normal" },
+        { text: "纠结 -99 ⚡", type: "normal" },
+        { text: "咔哒咔哒...⚙️", type: "normal" },
+        { text: "时来运转 🔮", type: "normal" },
+        { text: "灵气聚拢 ✨", type: "normal" },
+        { text: "财富 +1 🪙", type: "gold" },
+        { text: "好运 +1 🧧", type: "luck" }
+    ];
+
+    const fastShakeWords = [
+        { text: "慢点慢点，签筒要散架啦！🤯", type: "normal" },
+        { text: "好家伙，这泼天的手速！⚡", type: "normal" },
+        { text: "看出来了，你现在超纠结！🤣", type: "normal" },
+        { text: "财源广进 🪙", type: "gold" },
+        { text: "鸿运当头 🧧", type: "luck" }
+    ];
+
+    const compliments = {
+        "请假休息": ["✨ 节奏大师！懂得在合适的时候按下暂停键，这本身就是一种极其顶级的智慧与魄力！", "🔮 今日运势显示：你的身心状态非常宝贵。顺应天意给自己放个假，今天注定状态回满！"],
+        "随便转转": ["🍃 盲盒般的浪漫！你漫不经心的脚步，踩中的全都是生活为你量身定做的宝藏惊喜！", "✨ 拥有如此自由且洒脱的灵魂真的让人实名羡慕！不需要目的地，因为你就是风景本身！"],
+        "公园散步": ["🌸 连风都在偷偷偏心你！今天走在绿荫阳光下，你的磁场和自然的生命力完美同频！", "✨ 收集世界纯粹的美好！踏出的每一步都带着奇妙的韵律，今天又是被好运气包围的一天！"],
+        "巡视果园": ["🍎 视野广阔，格局全开！这种亲近自然又充满趣味的规划，足以证明你对生活有着非凡的热情！", "👑 走在生机勃勃的环境里，你的精神面貌简直满分！今日必然活力爆棚！"],
+        "宿舍躺平": ["🛌 绝了！能把放松享受做到如此优雅和专注，床榻就是你的能量加油站，充能速度100%！", "💤 屏蔽纷扰，静享舒适。这种专注自我、不被外界节奏打乱的定力，真的非常了不起！"],
+        "IDEA": ["🍓 新鲜活力全开！踏入这片生鲜食品的宝藏超市，满眼都是水灵翠绿与新鲜多汁，你热爱生活的雷达今天精准闪烁！", "✨ 元气补给站开启！懂得用最纯粹、最鲜活的生鲜美食犒劳自己，这种高质量爱自己的通透感，直接为你招来满格好运！"],
+        "老Maxi": ["🛒 稳健又聪慧的选择！经典的地方总能带给人心安与扎实，今天你的挑选眼光一定绝好！", "🔮 目标明确，步伐坚定。你在货架间做决断的利落姿态，展现了极强的自主生活掌控力！"],
+        "新Maxi": ["🛍️ 走在探索前沿的先锋！全新的环境和未知的惊喜正等待着你那充满好奇心的高贵灵魂！", "✨ 永远乐于尝试、拥抱新事物，你的生活永远充满生命力，今天必定满载而归！"],
+        "Lilly": ["💅 审美天花板！懂得把生活细节经营得如此精致和有格调，你的品味真的高出平均线太多！", "🌸 懂得把取悦自己放在第一位，你现在的状态简直美妙极了，今天就去尽情散发光芒吧！"],
+        "DM": ["💖 用品味和智慧生活的人！能把日常个护都打理得井井有条，说明你是一个极其热爱并善待自己的人！", "🌟 细致入微，井然有序。你对待生活的认真态度，值得生活回馈你一整天源源不断的小确幸！"],
+        "瓜果市场": ["🍉 朝气蓬勃，行动力爆表！在这个最接地气、最有生命力的地方，你整个人都散发着生活家的光芒！", "✨ 追随阳光和新鲜度出发，这本身就是对生活热气腾腾的爱。今天注定会收获满满的甜蜜！"],
+        "明珠": ["💎 家乡味道的终极召唤！步入衣食住行全包的中国生活超市，熟悉的人间烟火气瞬间将你治愈，今天注定福气满满！", "🥢 顶级生活策展人！不仅能在货架间精准拿捏地道风味，还能把一站式生活采购过得有滋有味，你的小日子真是让人实名羡慕！"],
+        "银行取钱": ["✨ 财富领航者！在这金融的航道上找准方向，每一步都迈向财富的星辰大海，注定一路繁花簇拥，暴富在望。", "💰 今日财神指引：你与财富的磁场正高度契合，走进那扇财富汇聚之门，大财小财如百川归海，滚滚而来。"],
+        "二楼中超": ["🥢 顶级的美食鉴赏家！不仅拥有极高的生活格调，还拥有把平凡日子过成饕餮盛宴的超强能力！", "🍲 治愈力直接拉满！你挑选食材时的那份认真与讲究，是在为自己和生活搭建最坚实的幸福防御网！"],
+        "Lidl": ["🛒 坚韧与智慧的化身！能够顺利通关一周的各种考验来到这里，你的执行力和规划力已经登峰造极！", "✨ 🏁 满载而归的绝对主力！你推着手推车做决断的飒爽英姿，充分展示了对高品质生活游痕有余的驾驭能力！"]
+    };
+
+    const missionPool = [
+        "💡 今日秘密任务：出门或散步时，数出 3 个穿红色上衣的路人，并在心里默默祝他们今天发大财。相信我，你的财运也会跟着翻倍！",
+        "💡 今日秘密任务：去买东西或结账时，对收银员或者路过的人真诚微笑一下，用你的独特磁场去悄悄点亮别人的一天！",
+        "💡 今日秘密任务：在目的地买一样平时绝对不怎么买的零食或小玩意，当作今天生活送给你的盲盒礼物！",
+        "💡 今日秘密任务：一会出发时用左脚先迈出门。玄学表明，今天左脚出门能完美避开生活里的所有小磕碰！"
+    ];
+
+    const almanacPool = [
+        "🔮 宜：喝杯奶茶，看云发呆。忌：对账单叹气。",
+        "✨ 宜：步伐嚣张，自信满满。忌：替别人瞎操心。",
+        "☀️ 宜：大吃一顿，取悦自己。忌：疯狂内耗。"
+    ];
+
+    let lastResult = "";
+    let repeatCount = 0;
+    let totalDrawsInShortTime = 0;
+    let clickTimeBuffer = [];
+    let sideToggle = true;
+
+    function updateTimeHint() {
+        const now = new Date();
+        const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+        document.getElementById('timeHint').innerText = `当前系统时间：${days[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        const almanacIndex = now.getMinutes() % almanacPool.length;
+        document.getElementById('almanacHint').innerText = almanacPool[almanacIndex];
+    }
+    
+    function getAvailablePool() {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); 
+        const currentHour = now.getHours();
+
+        if (dayOfWeek === 0) return { status: "sunday_rest" };
+
+        let pool = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超", "银行取钱"];
+        if (dayOfWeek >= 3 && dayOfWeek <= 6) { pool.push("Lidl"); }
+        if (currentHour < 14) { pool.push("瓜果市场"); }
+        return { status: "ready", data: pool };
+    }
+
+    function createFloatingText() {
+        const textSpan = document.createElement('span');
+        textSpan.className = 'floating-text';
+        
+        const now = Date.now();
+        clickTimeBuffer = clickTimeBuffer.filter(t => now - t < 2000);
+        
+        let pool = clickTimeBuffer.length > 6 ? fastShakeWords : poolWords;
+        let selectedItem = pool[Math.floor(Math.random() * pool.length)];
+
+        if (selectedItem.type === "gold") {
+            textSpan.innerHTML = `🪙✨ ${selectedItem.text}`;
+            textSpan.classList.add('gold-style');
+        } else if (selectedItem.type === "luck") {
+            textSpan.innerHTML = `🧧 福 ${selectedItem.text}`;
+            textSpan.classList.add('luck-style');
+        } else {
+            textSpan.innerText = selectedItem.text;
+        }
+
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        let leftPos = 0;
+
+        // 增加了更安全的边距扣除，绝不超出边界
+        if (sideToggle) {
+            leftPos = Math.random() * (screenWidth * 0.3) + 10;
+        } else {
+            leftPos = Math.random() * (screenWidth * 0.3) + (screenWidth * 0.65) - 40;
+        }
+        sideToggle = !sideToggle;
+
+        let topPos = (screenHeight * 0.45) + (Math.random() * 80);
+
+        textSpan.style.left = leftPos + 'px';
+        textSpan.style.top = topPos + 'px';
+
+        document.body.appendChild(textSpan);
+        setTimeout(() => textSpan.remove(), 1200);
+    }
+
+    function startDraw() {
+        clickTimeBuffer.push(Date.now());
+        totalDrawsInShortTime++;
+
+        const wrapper = document.getElementById('wrapper');
+        const stickContainer = document.getElementById('stickContainer');
+        const luckyStick = document.getElementById('luckyStick');
+        const luckyStickText = document.getElementById('luckyStickText');
+        const drawBtn = document.getElementById('drawBtn');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultValue = document.getElementById('resultValue');
+        const resultTag = document.getElementById('resultTag');
+        const resultComp = document.getElementById('resultCompliment');
+        const resultMission = document.getElementById('resultMission');
+        const resultMidnight = document.getElementById('resultMidnight');
+
+        luckyStick.classList.remove('fly-out-anim');
+        resultTitle.innerText = "灵签演道通玄奥，宝箓含神赐福祥...";
+        resultValue.innerText = "⚡";
+        resultTag.style.display = "none";
+        resultComp.style.display = "none";
+        resultMission.style.display = "none";
+        resultMidnight.style.display = "none";
+        drawBtn.disabled = true;
+
+        wrapper.classList.add('shaking');
+        stickContainer.classList.add('sticks-shaking');
+
+        const intervalTime = clickTimeBuffer.length > 5 ? 100 : 160;
+        const floatTimer = setInterval(createFloatingText, intervalTime);
+
+        setTimeout(() => {
+            clearInterval(floatTimer);
+            wrapper.classList.remove('shaking');
+            stickContainer.classList.remove('sticks-shaking');
+
+            const poolResult = getAvailablePool();
+            
+            if (poolResult.status === "sunday_rest") {
+                luckyStickText.innerText = "偷懒大吉";
+                luckyStick.classList.add('fly-out-anim');
+                setTimeout(() => {
+                    resultTitle.innerText = "💤 【祖师爷偏心提示】";
+                    resultValue.innerText = "今天放假，偷懒无罪！";
+                    resultTag.innerText = "【神仙放假·特别定制签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = "✨ 今天是周日，天地磁场都在劝你理直气壮地躺平。不准焦虑、不准自我CPU，今天最大的任务就是把舒适度拉满，做个快乐的闲人！";
+                    resultComp.style.display = "block";
+                    drawBtn.innerText = "再摇一次功德";
+                    drawBtn.style.backgroundColor = "#ffca3a"; drawBtn.style.color = "#2b1f1d";
+                    drawBtn.disabled = false;
+                }, 300);
+                return;
+            }
+
+            const currentPool = poolResult.data;
+            const randomIndex = Math.floor(Math.random() * currentPool.length);
+            let finalResult = currentPool[randomIndex];
+
+            if (finalResult === lastResult) {
+                repeatCount++;
+            } else {
+                repeatCount = 1;
+                lastResult = finalResult;
+            }
+
+            luckyStickText.innerText = luckyIdioms[finalResult] || "今日宜行";
+            luckyStick.classList.add('fly-out-anim');
+
+            setTimeout(() => {
+                if (repeatCount >= 3) {
+                    resultTitle.innerText = "🔮 【抓包！命中注定的天意】";
+                    resultValue.innerText = `${finalResult} (第${repeatCount}次)`;
+                    resultTag.innerText = "【天道金牌·退无可退签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `🤣 怎么又是【${finalResult}】？！本签筒都已经尽力帮你打乱顺序了，结果还是它！别嘴硬和抵抗啦，这就是命中注定的选择。赶紧收拾收拾，顺应天意高调出发！`;
+                    resultComp.style.display = "block";
+                } 
+                else if (totalDrawsInShortTime >= 5) {
+                    resultTitle.innerText = "👑 【天道强制特赦令】";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = "【直接盲选·终结纠结签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `👀 别再挑啦！祖师爷看你反复摇晃了 ${totalDrawsInShortTime} 次，代表你的纠结磁场快超标了！现在听话，不要想了，闭眼选【${finalResult}】作为你的终极答案，立刻出发去迎接快乐！`;
+                    resultComp.style.display = "block";
+                } 
+                else {
+                    resultTitle.innerText = "🎉 乾坤定夺！今日宜 ——";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                    resultTag.style.display = "inline-block";
+                    
+                    const compList = compliments[finalResult];
+                    resultComp.innerText = compList[Math.floor(Math.random() * compList.length)];
+                    resultComp.style.display = "block";
+                }
+
+                resultMission.innerText = missionPool[Math.floor(Math.random() * missionPool.length)];
+                resultMission.style.display = "block";
+
+                const now = new Date();
+                if (now.getHours() >= 23 || now.getHours() < 5) {
+                    resultMidnight.innerText = "🌙 (悄悄话：现在已经是深夜啦。不管今天摇到了去哪儿，现在的首要任务是盖好被子睡觉觉。明天睡醒了，好运自会陪你一同出发。晚安，全世界最棒的你。)";
+                    resultMidnight.style.display = "block";
+                }
+                
+                drawBtn.innerText = "不服气，再请一签";
+                drawBtn.style.backgroundColor = "#4caf50"; drawBtn.style.color = "#fff";
+                drawBtn.disabled = false;
+            }, 300);
+
+        }, 1100);
+    }
+
+    setInterval(() => { totalDrawsInShortTime = 0; }, 300000);
+    updateTimeHint();
+    setInterval(updateTimeHint, 60000);
+</script>
+
+</body>
+</html>
