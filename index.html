@@ -34,6 +34,7 @@
             box-shadow: 8px 8px 0px #cfbda3;
             text-align: center;
             position: relative;
+            overflow: hidden; /* 防止飘字动画溢出 */
         }
         h1 {
             font-size: 28px;
@@ -185,6 +186,23 @@
             animation: 牌飞出 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
+        /* 新增：功德飘字动画 */
+        @keyframes textFloatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-20px) scale(1.1); }
+            100% { transform: translateY(-80px) scale(1); opacity: 0; }
+        }
+        .floating-text {
+            position: absolute;
+            color: #e8bd68;
+            font-weight: 900;
+            font-size: 16px;
+            text-shadow: 1px 1px 0 #2b1f1d;
+            pointer-events: none;
+            z-index: 100;
+            animation: textFloatUp 0.8s ease-out forwards;
+        }
+
         /* 基础组件 */
         .btn-draw {
             background-color: #ff6b6b;
@@ -206,7 +224,7 @@
         .btn-draw:disabled {
             background-color: #cbd5e1;
             color: #94a3b8;
-            cursor: not-allowed;
+            cursor: pointer; /* 保持手势让周日点击有反馈 */
             box-shadow: none;
             transform: none;
         }
@@ -223,6 +241,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            position: relative;
         }
         .result-title {
             font-size: 13px;
@@ -234,7 +253,19 @@
             font-size: 26px;
             font-weight: 900;
             color: #cc4c33;
+            margin-bottom: 4px;
+        }
+        /* 新增：灵签吉言小标签样式 */
+        .result-tag {
+            font-size: 11px;
+            background: #cc4c33;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: bold;
             margin-bottom: 12px;
+            display: none;
+            letter-spacing: 1px;
         }
         .result-compliment {
             font-size: 14px;
@@ -251,14 +282,21 @@
         .hint-text {
             font-size: 11px;
             color: #a3908c;
-            margin-top: 20px;
+            margin-top: 15px;
             font-weight: 500;
+            line-height: 1.5;
+        }
+        .almanac-text {
+            font-size: 11px;
+            color: #cc4c33;
+            margin-top: 4px;
+            font-weight: 700;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container" id="mainContainer">
     <h1>灵瑞问签筒</h1>
     <div class="subtitle">—— 摇晃木筒 · 戳穿今日纠结 ——</div>
 
@@ -281,10 +319,12 @@
     <div class="result-box">
         <div id="resultTitle" class="result-title">心诚则灵，答案自现</div>
         <div id="resultValue" class="result-value">✏️</div>
+        <div id="resultTag" class="result-tag"></div>
         <div id="resultCompliment" class="result-compliment" style="display:none;"></div>
     </div>
 
     <div class="hint-text" id="timeHint"></div>
+    <div class="almanac-text" id="almanacHint"></div>
 </div>
 
 <script>
@@ -306,6 +346,28 @@
         "二楼中超": "丰衣足食",
         "Lidl": "满载而归"
     };
+
+    // 新增：花式吉签趣味标签
+    const signTags = {
+        "请假休息": "【奉天承运·超级大吉签】",
+        "宿舍躺平": "【御赐免死·极致松弛签】",
+        "随便转转": "【有缘相见·随缘锦鲤签】",
+        "公园散步": "【吸收天地灵气·上上签】",
+        "巡视果园": "【硕果累累·元气满满签】",
+        "IDEA": "【活力四射·多巴胺上等签】",
+        "老Maxi": "【稳如泰山·闭眼买好运签】",
+        "新Maxi": "【开拓疆土·惊喜盲盒签】",
+        "Lilly": "【审美爆发·优雅贵气签】",
+        "DM": "【精致生活·自律之神签】",
+        "瓜果市场": "【人间烟火·朝气蓬勃签】",
+        "明珠": "【家乡温暖·万事如意签】",
+        "银行取钱": "【财神显灵·吸金暴富签】",
+        "二楼中超": "【饕餮盛宴·大饱口福签】",
+        "Lidl": "【通关得胜·满载而归签】"
+    };
+
+    // 摇晃时随机弹出的趣味解压小字
+    const shakeWords = ["功德 +1 🌟", "好运 +10 🔥", "纠结 -99 ⚡", "咔哒咔哒...⚙️", "时来运转 🔮", "灵气聚拢 ✨"];
 
     // 史诗级无标签夸夸矩阵
     const compliments = {
@@ -381,7 +443,7 @@
             "✨ 严选大师！每一次挑选都彰显着你理智又高级的生活美学，今天的消费体验注定完美！",
             "🌟 细致入微，井然有序。你对待生活的认真态度，值得生活回馈你一整天源源不断的小确幸！",
             "🧪 兼具实用与精致的顶级玩家！货架上那些提升幸福感的小物，在遇到你之后才真正找到了最懂它们的主人！",
-            "永久关爱自己，这才是最让人佩服的生活大智慧。今天的你，由内而外都在闪烁着健康与自信！"
+            "🧩 懂得精细化关爱自己，这才是最让人佩服的生活大智慧。今天的你，由内而外都在闪烁着健康与自信！"
         ],
         "瓜果市场": [
             "🍉 朝气蓬勃，行动力爆表！在这个最接地气、最有生命力的地方，你整个人都散发着生活家的光芒！",
@@ -421,10 +483,22 @@
         ]
     };
 
+    // 新增：老黄历小情趣赠言池
+    const almanacPool = [
+        "🔮 宜：喝杯奶茶，看云发呆。忌：对账单叹气。",
+        "✨ 宜：步伐嚣张，自信满满。忌：替别人瞎操心。",
+        "☀️ 宜：大吃一顿，取悦自己。忌：疯狂内耗。",
+        "🔮 宜：对镜子微笑，盲目乐观。忌：熬夜修仙。"
+    ];
+
     function updateTimeHint() {
         const now = new Date();
         const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
         document.getElementById('timeHint').innerText = `当前系统时间：${days[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        // 动态老黄历变化
+        const almanacIndex = now.getMinutes() % almanacPool.length;
+        document.getElementById('almanacHint').innerText = almanacPool[almanacIndex];
     }
     
     function getAvailablePool() {
@@ -448,6 +522,24 @@
         return { status: "ready", data: pool };
     }
 
+    // 新增：产生“功德+1”等飘字互动效果
+    function createFloatingText() {
+        const container = document.getElementById('mainContainer');
+        const textSpan = document.createElement('span');
+        textSpan.className = 'floating-text';
+        
+        // 随机选择词汇
+        const randomWord = shakeWords[Math.floor(Math.random() * shakeWords.length)];
+        textSpan.innerText = randomWord;
+
+        // 在筒子周围随机定个位
+        textSpan.style.left = (Math.random() * 100 + 120) + 'px';
+        textSpan.style.bottom = (Math.random() * 40 + 200) + 'px';
+
+        container.appendChild(textSpan);
+        setTimeout(() => textSpan.remove(), 800);
+    }
+
     function startDraw() {
         const wrapper = document.getElementById('wrapper');
         const stickContainer = document.getElementById('stickContainer');
@@ -456,35 +548,43 @@
         const drawBtn = document.getElementById('drawBtn');
         const resultTitle = document.getElementById('resultTitle');
         const resultValue = document.getElementById('resultValue');
+        const resultTag = document.getElementById('resultTag');
         const resultComp = document.getElementById('resultCompliment');
+
+        const poolResult = getAvailablePool();
+        
+        // 周日点击调皮反馈
+        if (poolResult.status === "empty") {
+            resultTitle.innerText = "💤 【祖师爷提示】";
+            resultValue.innerText = "周日强摇签筒，木签可是会卡住的哦！";
+            resultTag.style.display = "none";
+            resultComp.innerText = "✨ 天意让引入注目、充满生活智慧的你今天彻底放松。别纠结了，今天最大的任务就是心安理得地躺平！";
+            resultComp.style.display = "block";
+            return;
+        }
 
         luckyStick.classList.remove('fly-out-anim');
         resultTitle.innerText = "灵签演道通玄奥，宝箓含神赐福祥...";
         resultValue.innerText = "⚡";
+        resultTag.style.display = "none";
         resultComp.style.display = "none";
         drawBtn.disabled = true;
 
         wrapper.classList.add('shaking');
         stickContainer.classList.add('sticks-shaking');
 
+        // 摇晃期间隔产生功德飘字，增强点击解压爽感
+        const floatTimer = setInterval(createFloatingText, 200);
+
         setTimeout(() => {
+            clearInterval(floatTimer);
             wrapper.classList.remove('shaking');
             stickContainer.classList.remove('sticks-shaking');
-
-            const poolResult = getAvailablePool();
-            
-            if (poolResult.status === "empty") {
-                resultTitle.innerText = "💤 【今日闭筒】";
-                resultValue.innerText = poolResult.reason;
-                drawBtn.disabled = false;
-                return;
-            }
 
             const currentPool = poolResult.data;
             const randomIndex = Math.floor(Math.random() * currentPool.length);
             const finalResult = currentPool[randomIndex];
 
-            // 核心变动：根据抽取结果，动态修改弹出的蓝色签上面的文字
             luckyStickText.innerText = luckyIdioms[finalResult] || "今日宜行";
             luckyStick.classList.add('fly-out-anim');
 
@@ -492,7 +592,10 @@
                 resultTitle.innerText = "🎉 乾坤定夺！今日宜 ——";
                 resultValue.innerText = `${finalResult}`;
                 
-                // 抽取对应地点的专属无标签彩虹屁
+                // 展现新增的花式趣味上上签标签
+                resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                resultTag.style.display = "inline-block";
+                
                 const compList = compliments[finalResult];
                 const randomCompIndex = Math.floor(Math.random() * compList.length);
                 
