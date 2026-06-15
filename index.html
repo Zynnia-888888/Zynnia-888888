@@ -2,438 +2,675 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>道观摇签筒</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>时来运转</title>
     <style>
-        /* 全局国风优雅底色 */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* 全局大背景：作为手机外壳的承托环境 */
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Serif SC", serif;
-            background: linear-gradient(135deg, #f5f2eb 0%, #e8e3d7 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #ede2d1;
+            background-image: 
+                linear-gradient(rgba(215, 201, 180, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(215, 201, 180, 0.5) 1px, transparent 1px);
+            background-size: 30px 30px; 
+            color: #2b1f1d;
+            display: flex; 
+            justify-content: center; 
             align-items: center;
-            padding: 20px;
-            color: #333;
+            min-height: 100vh; 
+            overflow: hidden; /* 阻止外层视口产生双滚动条 */
+            transition: background-color 0.5s ease;
         }
 
-        /* 👑 核心视觉：最外围包围环绕内容的倒角圆弧框 */
-        .app-container {
+        /* 核心：倒角圆弧框（唯一的外围框） */
+        .phone-viewport {
             width: 100%;
-            max-width: 400px;
-            background: rgba(253, 252, 248, 0.95);
-            border-radius: 24px; /* 保持手机端圆弧倒角视觉框 */
-            padding: 30px 24px;
-            box-shadow: 
-                0 4px 10px rgba(139, 119, 93, 0.1),
-                0 16px 40px rgba(139, 119, 93, 0.15),
-                inset 0 0 0 1px rgba(255, 255, 255, 0.6); /* 高阶微光流边 */
+            max-width: 412px; /* 经典手机端标准视觉宽度 */
+            height: 94vh;
+            max-height: 860px;
+            background-color: #f7eedf;
+            background-image: 
+                linear-gradient(rgba(224, 211, 192, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(224, 211, 192, 0.4) 1px, transparent 1px);
+            background-size: 20px 20px;
+            
+            /* 完美的手机卡片倒角与硬核边缘切裁 */
+            border-radius: 36px;
+            border: 6px solid #2b1f1d; 
+            box-shadow: 0 20px 50px rgba(43, 31, 29, 0.25), 12px 12px 0px #cfbda3;
+            
             position: relative;
-            text-align: center;
-            overflow: hidden;
-        }
-
-        /* 顶部标题与状态 */
-        .header {
-            margin-bottom: 25px;
-        }
-        .header h1 {
-            font-size: 24px;
-            color: #8c2423; /* 朱砂红 */
-            letter-spacing: 2px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-        .status-badge {
-            display: inline-block;
-            font-size: 11px;
-            background-color: #f1ede2;
-            color: #7a6e5b;
-            padding: 3px 10px;
-            border-radius: 12px;
-            margin-top: 4px;
-        }
-
-        /* 签筒展示区（去除原有的内部边框，完全悬浮融入大框中） */
-        .divination-zone {
-            position: relative;
-            height: 230px;
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-
-        /* 木签群容器（绝对中轴对称居中） */
-        .stick-container {
-            position: absolute;
-            bottom: 65px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 120px;
-            height: 120px;
-            transition: transform 0.1s;
-            z-index: 2;
-        }
-        .stick {
-            position: absolute;
-            bottom: 0;
-            width: 8px;
-            height: 110px;
-            background: linear-gradient(to top, #cc9952 0%, #e6be7e 80%, #bb1e1e 100%);
-            border-radius: 4px 4px 0 0;
-            box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
-            transform-origin: bottom center;
-        }
-        /* 5根竹签扇形对称发散布局 */
-        .stick:nth-child(1) { left: 20px; transform: rotate(-14deg); }
-        .stick:nth-child(2) { left: 40px; transform: rotate(-7deg); }
-        .stick:nth-child(3) { left: 60px; transform: rotate(0deg); }
-        .stick:nth-child(4) { left: 80px; transform: rotate(7deg); }
-        .stick:nth-child(5) { left: 100px; transform: rotate(14deg); }
-
-        /* 摇签筒外观（纯色与光泽，剔除多余装饰线） */
-        .cylinder {
-            position: relative;
-            width: 125px;
-            height: 140px;
-            background: linear-gradient(135deg, #a62424 0%, #801a1a 100%);
-            border-radius: 0 0 16px 16px;
-            box-shadow: 0 8px 20px rgba(128, 26, 26, 0.3);
-            z-index: 3;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .cylinder::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 10px;
-            background: #d4af37; /* 鎏金边 */
-            border-radius: 2px 2px 0 0;
-        }
-        .cylinder-text {
-            color: #d4af37;
-            font-size: 20px;
-            font-weight: bold;
-            letter-spacing: 4px;
-            writing-mode: vertical-rl;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-        }
-
-        /* 飞出的幸运签动画（完美居中飞出） */
-        .lucky-stick-out {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            width: 14px;
-            height: 150px;
-            background: linear-gradient(to top, #d4af37 0%, #f3e5ab 100%);
-            border-radius: 6px 6px 2px 2px;
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
-            z-index: 5;
-            display: none;
-            transform-origin: bottom center;
-        }
-        .lucky-stick-text {
-            color: #a62424;
-            font-size: 9px;
-            font-weight: bold;
-            writing-mode: vertical-rl;
-            margin: 15px auto 0 auto;
-            letter-spacing: 1px;
-        }
-
-        /* 签筒晃动动画 */
-        @keyframes shake {
-            0% { transform: translateX(-50%) rotate(0deg); }
-            15% { transform: translateX(-55%) rotate(-8deg); }
-            30% { transform: translateX(-45%) rotate(7deg); }
-            45% { transform: translateX(-53%) rotate(-6deg); }
-            60% { transform: translateX(-47%) rotate(5deg); }
-            75% { transform: translateX(-51%) rotate(-3deg); }
-            90% { transform: translateX(-49%) rotate(2deg); }
-            100% { transform: translateX(-50%) rotate(0deg); }
-        }
-        .shaking {
-            animation: shake 0.6s ease-in-out infinite;
-        }
-
-        /* 出签抛物线动画 */
-        @keyframes flyOut {
-            0% { transform: translateX(-50%) translateY(0) scale(0.8); opacity: 0; }
-            40% { transform: translateX(-50%) translateY(-100px) scale(1.1); opacity: 1; }
-            70% { transform: translateX(-50%) translateY(-75px) scale(1.05); }
-            100% { transform: translateX(-50%) translateY(-85px) scale(1.1); box-shadow: 0 10px 25px rgba(212, 175, 55, 0.6); }
-        }
-        .flying {
-            display: block !important;
-            animation: flyOut 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        /* 抽签按钮 */
-        .btn-pray {
-            width: 80%;
-            max-width: 240px;
-            background: linear-gradient(to right, #b83b3a, #8c2423);
-            color: #fdfcf8;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(140, 36, 35, 0.3);
-            transition: all 0.2s ease;
-            margin-top: 10px;
-        }
-        .btn-pray:active {
-            transform: scale(0.96);
-            box-shadow: 0 2px 6px rgba(140, 36, 35, 0.3);
-        }
-        .btn-pray:disabled {
-            background: #cbd5e1;
-            color: #94a3b8;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        /* 结果展示区域（去除嵌套框，仅通过柔和阴影和背景达成留白层次） */
-        .result-box {
-            margin-top: 25px;
-            min-height: 130px;
-            padding: 20px 16px;
-            border-radius: 16px;
-            background-color: #fdfdfc;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            overflow: hidden; /* 核心：确保所有动效粒子、签条不溢出圆弧框 */
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
         }
-        .result-box.active {
-            background-color: #fffaf2;
-            box-shadow: 0 4px 16px rgba(212, 175, 55, 0.12);
+        
+        /* 金色隐藏皮肤下的全景视口变换 */
+        body.golden-easter-egg {
+            background-color: #f3e6be;
         }
-        .result-title {
-            font-size: 18px;
-            color: #a62424;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        .result-poem {
-            font-size: 14px;
-            color: #665e52;
-            font-style: italic;
-            line-height: 1.6;
-            white-space: pre-line;
-        }
-        .placeholder-text {
-            color: #a3998a;
-            font-size: 14px;
-            letter-spacing: 1px;
+        .golden-easter-egg .phone-viewport {
+            background-color: #fcf4db;
+            background-image: 
+                linear-gradient(rgba(235, 195, 115, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(235, 195, 115, 0.3) 1px, transparent 1px);
+            border-color: #8c6200;
+            box-shadow: 0 20px 50px rgba(140, 98, 0, 0.2), 12px 12px 0px #e0ca9b;
         }
 
-        /* 底部系统信息反馈 */
-        .footer-info {
-            margin-top: 25px;
-            font-size: 11px;
-            color: #a3998a;
-            line-height: 1.5;
+        /* 视口内部的平滑滚动容器 */
+        .scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 35px 24px 30px;
+            width: 100%;
+            height: 100%;
+            /* 隐藏滚动条但保留功能 */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 内部核心纸卡片 —— 移除了多余的边框和阴影，完全融入最外层圆弧框 */
+        .container {
+            width: 100%; 
+            background: transparent;
+            padding: 0; 
+            text-align: center; 
+            position: relative; 
+            z-index: 10;
+        }
+
+        h1 { font-size: 28px; color: #cc4c33; letter-spacing: 2px; font-weight: 900; margin-bottom: 8px; transition: color 0.5s; }
+        .phone-viewport.golden-mode h1 { color: #b8860b; }
+        .subtitle { font-size: 13px; color: #7b6865; margin-bottom: 30px; font-weight: 500; }
+        
+        /* 摇签区域 - 严格中轴线对称设计 */
+        .cylinder-wrapper {
+            height: 270px; position: relative; margin-bottom: 25px;
+            display: flex; justify-content: center; align-items: flex-end;
+        }
+        /* 绝对居中对齐 */
+        .stick-container {
+            position: absolute; bottom: 110px; width: 140px; height: 130px;
+            display: flex; justify-content: center; align-items: flex-end;
+            left: 50%; transform: translateX(-50%);
+        }
+        .stick {
+            width: 35px; height: 110px; background-color: #f5cf82; border: 3px solid #2b1f1d;
+            border-radius: 8px 8px 0 0; margin: 0 -8px; transform-origin: bottom center;
+            position: relative; box-shadow: -1px 0 0px #2b1f1d;
+            transition: all 0.5s;
+        }
+        .phone-viewport.golden-mode .stick {
+            border-color: #8c6200;
+            background-color: #f7dfa6;
+        }
+        .stick::before {
+            content: ''; position: absolute; top: 8px; left: 50%;
+            transform: translateX(-50%); width: 6px; height: 6px;
+            background-color: #2b1f1d; border-radius: 50%;
+        }
+        .phone-viewport.golden-mode .stick::before { background-color: #8c6200; }
+        
+        /* 严格中轴线对称旋转偏角 */
+        .stick:nth-child(1) { transform: rotate(-14deg) translateY(4px); background-color: #e8bd68; }
+        .stick:nth-child(2) { transform: rotate(-7deg) translateY(-2px); background-color: #f7d692; }
+        .stick:nth-child(3) { transform: rotate(0deg) translateY(2px); background-color: #eed08a; z-index: 6; }
+        .stick:nth-child(4) { transform: rotate(7deg) translateY(-2px); background-color: #f5cf82; }
+        .stick:nth-child(5) { transform: rotate(14deg) translateY(4px); background-color: #e5b85c; }
+
+        .cylinder {
+            width: 150px; height: 140px; background-color: #e85d44; border: 4px solid #2b1f1d;
+            border-radius: 16px 16px 28px 28px; position: relative; z-index: 12;
+            box-shadow: 5px 5px 0px #2b1f1d; display: flex; justify-content: center; align-items: center;
+            transition: all 0.5s; margin: 0 auto;
+        }
+        .phone-viewport.golden-mode .cylinder {
+            background-color: #d4af37;
+            border-color: #8c6200;
+            box-shadow: 5px 5px 0px #8c6200;
+        }
+        .cylinder::after {
+            content: '万事皆宜'; position: absolute; padding: 8px 4px;
+            background-color: #ffca3a; border: 3px solid #2b1f1d; border-radius: 6px;
+            color: #2b1f1d; font-weight: 900; font-size: 15px;
+            writing-mode: vertical-rl; text-orientation: upright;
+            letter-spacing: 2px; box-shadow: 3px 3px 0 #2b1f1d;
+            transition: all 0.5s;
+        }
+        .phone-viewport.golden-mode .cylinder::after {
+            content: '提包跑路';
+            background-color: #fff;
+            border-color: #8c6200;
+            color: #8c6200;
+            box-shadow: 3px 3px 0 #8c6200;
+        }
+
+        /* 出签动画中轴线定位修正 */
+        .lucky-stick-out {
+            position: absolute; width: 45px; height: 150px; background-color: #118ab2;
+            border: 4px solid #2b1f1d; bottom: 110px; z-index: 5;
+            border-radius: 12px 12px 6px 6px; display: none;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.15); transform-origin: bottom center;
+            left: 50%; margin-left: -22.5px; /* 宽度45px的一半，实现完美中轴居中飞出 */
+        }
+        .lucky-stick-out::before {
+            content: ''; position: absolute; top: 12px; left: 50%;
+            transform: translateX(-50%); width: 8px; height: 8px;
+            background-color: #2b1f1d; border-radius: 50%;
+        }
+        .lucky-stick-text {
+            writing-mode: vertical-rl; text-orientation: upright; font-size: 13px;
+            color: #fff; font-weight: 900; margin: 32px auto 0 auto; letter-spacing: 4px;
+        }
+
+        /* 动画群 */
+        @keyframes handShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-8px, 4px) rotate(-10deg); }
+            40% { transform: translate(8px, -4px) rotate(10deg); }
+            60% { transform: translate(-6px, -2px) rotate(-8deg); }
+            80% { transform: translate(6px, 2px) rotate(8deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shaking { animation: handShake 0.4s ease-in-out infinite; }
+
+        @keyframes stickBumpy {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(-8deg); }
+            66% { transform: translateY(4px) rotate(10deg); }
+        }
+        .sticks-shaking .stick:nth-child(1) { animation: stickBumpy 0.35s ease-in-out infinite; }
+        .sticks-shaking .stick:nth-child(2) { animation: stickBumpy 0.35s ease-in-out infinite 0.07s; }
+        .sticks-shaking .stick:nth-child(3) { animation: stickBumpy 0.35s ease-in-out infinite 0.14s; }
+        .sticks-shaking .stick:nth-child(4) { animation: stickBumpy 0.35s ease-in-out infinite 0.21s; }
+        .sticks-shaking .stick:nth-child(5) { animation: stickBumpy 0.35s ease-in-out infinite 0.28s; }
+
+        @keyframes signFlyOut {
+            0% { bottom: 110px; opacity: 0; transform: scale(0.6) rotate(-15deg); }
+            60% { bottom: 230px; opacity: 1; transform: scale(1.1) rotate(5deg); }
+            100% { bottom: 190px; opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        .fly-out-anim { display: block !important; animation: signFlyOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* 基于手机视觉框内部定位的飘字动画 */
+        @keyframes textFloatUp {
+            0% { transform: translateY(0) scale(0.7); opacity: 0; }
+            15% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(-220px) scale(0.95); opacity: 0; }
+        }
+        .floating-text {
+            position: absolute;
+            color: #cc4c33; font-weight: 900; font-size: 17px;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #2b1f1d;
+            pointer-events: none;
+            z-index: 999;
+            animation: textFloatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            display: flex; align-items: center; gap: 4px;
+            white-space: nowrap;
+        }
+        .gold-style {
+            color: #ffa200 !important;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #b25900 !important;
+        }
+        .luck-style {
+            color: #ff3333 !important;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #5c0000 !important;
+        }
+
+        .btn-draw {
+            background-color: #ff6b6b; color: #fff; border: 4px solid #2b1f1d;
+            padding: 13px 40px; font-size: 18px; font-weight: 900; border-radius: 20px;
+            cursor: pointer; box-shadow: 4px 4px 0px #2b1f1d; letter-spacing: 2px;
+            transition: all 0.2s; width: 100%;
+        }
+        .btn-draw:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px #2b1f1d; }
+        .btn-draw:disabled { background-color: #cbd5e1; color: #94a3b8; box-shadow: none; transform: none; border-color: #94a3b8; }
+
+        .result-box {
+            margin-top: 25px; min-height: 140px; padding: 20px 16px; border-radius: 20px;
+            background-color: #dfd4c2; border: 3px solid #2b1f1d; box-shadow: 4px 4px 0px #c2b49e;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
+        }
+        .phone-viewport.golden-mode .result-box {
+            background-color: #ede2c5; border-color: #8c6200; box-shadow: 4px 4px 0px #d5c6a1;
+        }
+        .result-title { font-size: 13px; font-weight: 700; color: #5a4946; margin-bottom: 8px; }
+        .result-value { font-size: 25px; font-weight: 900; color: #cc4c33; margin-bottom: 4px; }
+        .phone-viewport.golden-mode .result-value { color: #b8860b; }
+        .result-tag { font-size: 11px; background: #cc4c33; color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: bold; margin-bottom: 12px; display: none; letter-spacing: 1px; }
+        .phone-viewport.golden-mode .result-tag { background: #b8860b; }
+        .result-compliment { font-size: 13px; color: #4a3532; font-weight: 700; line-height: 1.6; background-color: #fffbf5; padding: 10px 12px; border-radius: 12px; border: 2px dashed #2b1f1d; max-width: 98%; text-align: left; }
+        .phone-viewport.golden-mode .result-compliment { border-color: #8c6200; background-color: #fffff2; }
+        
+        .result-mission { font-size: 12px; color: #118ab2; font-weight: 700; margin-top: 10px; border-top: 1px dotted #cbd5e1; padding-top: 8px; width: 95%; text-align: left; display: none; }
+        .result-midnight { font-size: 11px; color: #7b6865; font-weight: 500; margin-top: 8px; font-style: italic; display: none; line-height: 1.4; }
+        .hint-text { font-size: 11px; color: #a3908c; margin-top: 15px; font-weight: 500; line-height: 1.5; text-align: center; }
+        .almanac-text { font-size: 11px; color: #cc4c33; margin-top: 4px; font-weight: 700; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="app-container">
+<div class="phone-viewport" id="viewportCard">
+    <div class="scroll-container">
         
-        <div class="header">
-            <h1>有求必应签筒</h1>
-            <div class="status-badge" id="current-time-badge">正在获取今日运势...</div>
-        </div>
+        <div class="container" id="mainContainer">
+            <h1>灵瑞问签筒</h1>
+            <div class="subtitle">—— 摇晃木筒 · 戳穿今日纠结 ——</div>
 
-        <div class="divination-zone">
-            <div class="lucky-stick-out" id="lucky-stick">
-                <div class="lucky-stick-text" id="lucky-stick-text">幸运签</div>
+            <div class="cylinder-wrapper" id="wrapper">
+                <div class="stick-container" id="stickContainer">
+                    <div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div>
+                </div>
+                <div class="lucky-stick-out" id="luckyStick"><div class="lucky-stick-text" id="luckyStickText">今日宜行</div></div>
+                <div class="cylinder" id="cylinderBox"></div>
             </div>
 
-            <div class="stick-container" id="stick-container">
-                <div class="stick"></div>
-                <div class="stick"></div>
-                <div class="stick"></div>
-                <div class="stick"></div>
-                <div class="stick"></div>
+            <button class="btn-draw" id="drawBtn" onclick="startDraw()">大力摇晃</button>
+
+            <div class="result-box">
+                <div id="resultTitle" class="result-title">心诚则灵，答案自现</div>
+                <div id="resultValue" class="result-value">✏️</div>
+                <div id="resultTag" class="result-tag"></div>
+                <div id="resultCompliment" class="result-compliment" style="display:none;"></div>
+                <div id="resultMission" class="result-mission"></div>
+                <div id="resultMidnight" class="result-midnight"></div>
             </div>
-            <div class="cylinder" id="cylinder-body">
-                <div class="cylinder-text">今日去哪</div>
-            </div>
-        </div>
 
-        <button class="btn-pray" id="btn-shake" onclick="startDivination()">虔诚摇签</button>
-
-        <div class="result-box" id="result-box">
-            <div class="placeholder-text" id="placeholder-msg">洗手静心，按下上方按钮祈愿</div>
-            <div class="result-title" id="result-title" style="display: none;"></div>
-            <div class="result-poem" id="result-poem" style="display: none;"></div>
-        </div>
-
-        <div class="footer-info" id="pool-preview">
-            天机流转，每日签池依时而变
+            <div class="hint-text" id="timeHint"></div>
+            <div class="almanac-text" id="almanacHint"></div>
         </div>
 
     </div>
+</div>
 
-    <script>
-        // 1. 词条池定义与古风签解打油诗库
-        const POEM_DATABASE = {
-            "请假休息": "身心俱疲叹红尘，暂卸繁华闭山门。高卧榻上面南面，偷得浮生半日闲。",
-            "Lidl": "熬过三更见晓晴，巧逢佳期出大营。琳琅满目皆资粮，满载而归步轻盈。",
-            "随便转转": "漫步庭前看落花，无拘无束任天涯。清风拂面不知远，随缘随喜即为家。",
-            "公园散步": "绿柳依依拂碧泉，青山隐隐入晴烟。偷闲最爱林间路，一步一清静自然。",
-            "巡视果园": "春华秋实万重山，硕果满枝压翠鬟。亲执藤鞭巡领地，得享丰收展笑颜。",
-            "宿舍躺平": "万事无忧且掩扉，红尘滚滚任它非。舒心展背高枕卧，梦回大唐不思归。",
-            "IDEA": "孤灯夜半坐长庭，灵感穿梭点繁星。架构通达乾坤大，功成破壁写仙经。",
-            "老Maxi": "故地重游旧街坊，仓廪丰实岁流长。熟门熟路皆良货，心满意足自生香。",
-            "新Maxi": "宏图新展气象新，百货云集迎贵宾。步履初登探宝地，琳琅满目悦身心。",
-            "Lilly": "芬芳流溢漫瑶台，玉液琼浆次第开。巧手妆点倾城色，红颜一笑百花羞。",
-            "DM": "生活细碎皆学问，格物致知万物新。日用百般皆齐备，惠而不费最怡人。",
-            "瓜果市场": "清晨破晓集晨光，紫燕衔红瓜果香。莫待日中车马散，早登仙界好商量。",
-            "明珠": "掌上明珠耀眼明，流光溢彩映仙庭。探得珍宝心中喜，不虚此行伴月行。",
-            "二楼中超": "拾级而上见家乡，满阁皆是故土香。珍馐百味抚羁旅，游子归家暖胃肠。"
-        };
+<script>
+    const luckyIdioms = {
+        "请假休息": "休养生息", "随便转转": "闲庭信步", "公园散步": "踏青纳福", "巡视果园": "春华秋实",
+        "宿舍躺平": "养精蓄锐", "IDEA": "妙笔生花", "老Maxi": "驾轻就熟", "新Maxi": "探奇拓新",
+        "Lilly": "赏心悦目", "DM": "洗心革面", "瓜果市场": "硕果累累", "明珠": "璀璨夺目",
+        "银行取钱": "财源广进", "二楼中超": "丰衣足食", "Lidl": "满载而归", "周五跑路大满贯": "溜之大吉"
+    };
 
-        // 2. 核心过滤逻辑：根据当前时间和星期动态生成签池
-        function generateDailyPool() {
-            const now = new Date();
-            const day = now.getDay();       // 0=周日, 1=周一, ..., 6=周六
-            const hour = now.getHours();     // 0-23小时
+    const signTags = {
+        "请假休息": "【奉天承运·超级大吉签】", "宿舍躺平": "【御赐免死·极致松弛签】", "随便转转": "【有缘相见·随缘锦鲤签】",
+        "公园散步": "【吸收天地灵气·上上签】", "巡视果园": "【硕果累累·元气满满签】", "IDEA": "【活力四射·多巴胺上等签】",
+        "老Maxi": "【稳如泰山·闭眼买好运签】", "新Maxi": "【开拓疆土·惊喜盲盒签】", "Lilly": "【审美爆发·优雅贵气签】",
+        "DM": "【精致生活·自律之神签】", "瓜果市场": "【人间烟火·朝气蓬勃签】", "明珠": "【家乡温暖·万事如意签】",
+        "银行取钱": "【财神显灵·吸金暴富签】", "二楼中超": "【饕餮盛宴·大饱口福签】", "Lidl": "【通关得胜·满载而归签】",
+        "周五跑路大满贯": "【奉天承运·周五特赦全免金牌】"
+    };
 
-            // 周日默认休息拦截标记
-            if (day === 0) {
-                return { isSunday: true, pool: [] };
+    const poolWords = [
+        { text: "功德 +1 🌟", type: "normal" },
+        { text: "纠结 -99 ⚡", type: "normal" },
+        { text: "咔哒咔哒...⚙️", type: "normal" },
+        { text: "时来运转 🔮", type: "normal" },
+        { text: "灵气聚拢 ✨", type: "normal" },
+        { text: "财富 +1 🪙", type: "gold" },
+        { text: "好运 +1 🧧", type: "luck" }
+    ];
+
+    const fastShakeWords = [
+        { text: "慢点慢点，签筒要散架啦！🤯", type: "normal" },
+        { text: "好家伙，这泼天的手速！⚡", type: "normal" },
+        { text: "看出来了，你现在超纠结！🤣", type: "normal" },
+        { text: "财源广进 🪙", type: "gold" },
+        { text: "鸿运当头 🧧", type: "luck" }
+    ];
+
+    const compliments = {
+        "请假休息": [
+            "✨ 节奏大师！懂得在合适的时候按下暂停键，这本身就是一种极其顶级的智慧与魄力！",
+            "🔮 今日运势显示：你的身心状态非常宝贵。顺应天意给自己放个假，今天注定状态回满！",
+            "🛌 敢于断舍离多余的疲惫！今天你的勇敢值拉满，请假是为了下一次更漂亮的华丽登场！"
+        ],
+        "随便转转": [
+            "🍃 盲盒般的浪漫！你漫不经心的脚步，踩中的全都是生活为你量身定做的宝藏惊喜！",
+            "✨ 拥有如此自由且洒脱的灵魂真的让人实名羡慕！不需要目的地，因为你就是风景本身！",
+            "🧭 漫无目的地闲晃，反而能避开生活设下的所有刻板KPI。今天世界是由你的心情来定义的！"
+        ],
+        "公园散步": [
+            "🌸 连风都在偷偷偏心你！今天走在绿荫阳光下，你的磁场和自然的生命力完美同频！",
+            "✨ 收集世界纯粹的美好！踏出的每一步都带着奇妙的韵律，今天又是被好运气包围的一天！",
+            "🍀 绿叶会为你洗去班味！去公园大口呼吸吧，今天大自然所有的负氧离子都在为你加油打气！"
+        ],
+        "巡视果园": [
+            "🍎 视野广阔，格局全开！这种亲近自然又充满趣味的规划，足以证明你对生活有着非凡的热情！",
+            "👑 走在生机勃勃的环境里，你的精神面貌简直满分！今日必然活力爆棚！",
+            "🌳 仿佛化身为巡视领地的尊贵庄园主！去大自然中验收快乐吧，满地生机都将化为你的财富磁场！"
+        ],
+        "宿舍躺平": [
+            "🛌 绝了！能把放松享受做到如此优雅和专注，床榻就是你的能量加油站，充能速度100%！",
+            "💤 屏蔽纷扰，静享舒适。这种专注自我、不被外界节奏打乱的定力，真的非常了不起！",
+            "🛡️ 宿舍的四面墙今天就是你最坚固的幸福防御盾！把疲惫隔绝在外，今日舒适度高调超标！"
+        ],
+        "IDEA": [
+            "💻 灵感爆发！思维的火花在疯狂闪烁，你今天的专注力和逻辑力简直强大到无可匹敌！",
+            "🚀 核心力量全开！一旦专注起来，任何难题在你面前都会迎刃而解，今天的效率直接拉满！",
+            "✨ 锐意进取，势不可挡！你现在身上散发的认真光芒，足以吸引全宇宙的正能量为你开路！"
+        ],
+        "老Maxi": [
+            "🛒 稳健又聪慧的选择！经典的地方总能带给人心安与扎实，今天你的挑选眼光一定绝好！",
+            "🔮 目标明确，步伐坚定。你在货架间做决断的利落姿态，展现了极强的自主生活掌控力！",
+            "🥖 经典的配方，熟悉的治愈感。在熟悉的环境里，你的运势走得极其平稳且舒适！"
+        ],
+        "新Maxi": [
+            "🛍️ 走在探索前沿的先锋！全新的环境和未知的惊喜正等待着你那充满好奇心的高贵灵魂！",
+            "✨ 永远乐于尝试、拥抱新事物，你的生活永远充满生命力，今天必定满载而归！",
+            "🌟 带着拓荒者的英姿高调探索！未曾见过的商品和货架，正在悄悄碰撞出你今天的全新好运！"
+        ],
+        "Lilly": [
+            "💅 审美天花板！懂得把生活细节经营得如此精致和有格调，你的品味真的高出平均线太多！",
+            "🌸 懂得把取悦自己放在第一位，你现在的状态简直美妙极了，今天就去尽情散发光芒吧！",
+            "💄 每一处细节都在闪闪发光！你对美的追求是如此无可剔除，今天你就是优雅生活的代言人！"
+        ],
+        "DM": [
+            "💖 用品味和智慧生活的人！能把日常个护都打理得井井有条，说明你是一个极其热爱并善待自己的人！",
+            "🌟 细致入微，井然有序。你对待生活的认真态度，值得生活回馈你一整天源源不断的小确幸！",
+            "🧴 极致自律带来的舒适安全感！打理好生活细节的你，磁场无比干净且充满正能量！"
+        ],
+        "瓜果市场": [
+            "🍉 朝气蓬勃，行动力爆表！在这个最接地气、最有生命力的地方，你整个人都散发着生活家的光芒！",
+            "✨ 追随阳光和新鲜度出发，这本身就是对生活热气腾腾的爱。今天注定会收获满满的甜蜜！",
+            "🍓 新鲜活力全开！满眼都是水灵翠绿与新鲜多汁，你热爱生活的雷达今天精准闪烁！"
+        ],
+        "明珠": [
+            "💎 熠熠生辉！抽中这个选项，意味着你今天的运势也如明珠般璀璨，任何纠结都会烟消云散！",
+            "🌟 气场高调且迷人！做选择时如此果断又具前瞻性，今天的你注定是不可忽视的焦点！",
+            "🔮 稳健独特！你总是知道什么最适合自己，带着这份无敌的自信，今天万事皆宜！"
+        ],
+        "银行取钱": [
+            "✨ 财富领航者！在这金融的航道上找准方向，每一步都迈向财富的星辰大海，注定一路繁花簇拥，暴富在望。",
+            "💰 今日财神指引：你与财富的磁场正高度契合，走进那扇财富汇聚之门，大财小财如百川归海，滚滚而来。",
+            "🪙 亮晶晶的财运正在疯狂向你招手！听到了吗？那是钱包正在快乐膨胀的绝妙声音！"
+        ],
+        "二楼中超": [
+            "🥢 顶级的美食鉴赏家！不仅拥有极高的生活格调，还拥有把平凡日子过成饕餮盛宴的超强能力！",
+            "🍲 治愈力直接拉满！你挑选食材时的那份认真与讲究，是在为自己和生活搭建最坚实的幸福防御网！",
+            "🍚 熟悉的饭香就是最强大的魔法！今天去挑选心仪的家乡风味，福气和胃口双双达到巅峰！"
+        ],
+        "Lidl": [
+            "🛒 坚韧与智慧的化身！能够顺利通关一周的各种考验来到这里，你的执行力和规划力已经登峰造极！",
+            "✨ 🏁 满载而归的绝对主力！你推着手推车做决断的飒爽英姿，充分展示了对高品质生活游刃有余的驾驭能力！",
+            "🎫 满格执行力通关成功！去推开属于你的胜利之门，今天的性价比之神将会一路保驾护航！"
+        ],
+        "周五跑路大满贯": [
+            "👑 降维打击！这是天赐的跑路神旨，既然触发了这 10% 的隐藏概率，今天就必须把所有烦恼统统全免甩到脑后！",
+            "🌟 金光闪闪的至尊特赦！你今天的运气已经击败了全宇宙 99% 的打工人，顺应这个特赦彩蛋，高调迎接完全属于你的狂欢！",
+            "🏁 满贯跑路，神仙撑腰！所有的焦虑、工作、纠结在这一刻被全部清空，带着你的特赦金牌，快乐出发！"
+        ]
+    };
+
+    const missionPool = [
+        "💡 今日秘密任务：出门或散步时，数出 3 个穿红色上衣的路人，并在心里默默祝他们今天发大财。相信我，你的财运也会跟着翻倍！",
+        "💡 今日秘密任务：去买东西或结账时，对收银员或者路过的人真诚微笑一下，用你的独特磁场去悄悄点亮别人的一天！",
+        "💡 今日秘密任务：在目的地买一样平时绝对不怎么买的零食或小玩意，当作今天生活送给你的盲盒礼物！",
+        "💡 今日秘密任务：一会出发时用左脚先迈出门。玄学表明，今天左脚出门能完美避开生活里的所有小磕碰！"
+    ];
+
+    const almanacPool = [
+        ["🔮 宜：喝杯奶茶，看云发呆。忌：对账单叹气。", "✨ 宜：步伐嚣张，自信满满。忌：替别人瞎操心。"],
+        ["☀️ 宜：大吃一顿，取悦自己. 忌：疯狂内耗。", "🍃 宜：保持快乐，拒绝加班. 忌：回复消息太快。"],
+        ["🛡️ 宜：理直气壮，绝不背锅。忌：自我CPU。", "🪙 宜：高调吸金，闭眼买单。忌：疯狂省钱。"],
+        ["🌸 宜：亲近自然，大口呼吸。忌：坐在椅子上生根。", "🚀 宜：火力全开，一气耗成。忌：磨磨唧唧拖延。"]
+    ];
+
+    let lastResult = "";
+    let repeatCount = 0;
+    let totalDrawsInShortTime = 0;
+    let clickTimeBuffer = [];
+    let sideToggle = true;
+
+    function updateTimeHint() {
+        const now = new Date();
+        const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+        document.getElementById('timeHint').innerText = `当前系统时间：${days[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        const poolIndex = now.getMinutes() % almanacPool.length;
+        const subIndex = now.getSeconds() % 2;
+        document.getElementById('almanacHint').innerText = almanacPool[poolIndex][subIndex];
+    }
+    
+    // 修复问题1：工作时间段不再死锁唯一选项，而是依然可以抽取全部，但保留有趣的作息提示
+    function getAvailablePool() {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); 
+        const currentHour = now.getHours();
+
+        // 基础池
+        let pool = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超", "银行取钱"];
+        if (dayOfWeek >= 3 && dayOfWeek <= 6) { pool.push("Lidl"); }
+        if (currentHour < 14) { pool.push("瓜果市场"); }
+
+        if (dayOfWeek === 0) return { status: "sunday_rest" };
+
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            if (currentHour >= 9 && currentHour < 12) {
+                return { status: "ready", data: pool, intercept: "💼 现正值晨间高效工作黄金期！虽然抽到了这个，但祖师爷还是悄悄暗示你用【IDEA】开启你无敌的逻辑风暴哦！" };
             }
-
-            // 常规基础词条
-            let pool = [
-                "请假休息", "随便转转", "公园散步", "巡视果园", 
-                "宿舍躺平", "IDEA", "老Maxi", "新Maxi", 
-                "Lilly", "DM", "明珠", "二楼中超"
-            ];
-
-            // 限制条件1: Lidl 只有熬过了周三才会触发 (即周三、周四、周五、周六可用)
-            if (day >= 3 && day <= 6) {
-                pool.push("Lidl");
+            if (currentHour >= 12 && currentHour < 14) {
+                return { status: "ready", data: pool, intercept: "🍱 呼呼！午休干饭干大觉时间到！不管摇到啥，快去整点好吃的或者狠狠躺平！" };
             }
-
-            // 限制条件2: 瓜果市场只有下午2点 (14:00) 之前开放
-            if (hour < 14) {
-                pool.push("瓜果市场");
+            if (currentHour >= 14 && currentHour < 17) {
+                return { status: "ready", data: pool, intercept: "🪐 午后能量攻坚战时间！打起精神，一会儿别忘了打开【IDEA】大杀四方，今晚准时下班！" };
             }
+            if (currentHour >= 17 && currentHour < 19) {
+                return { status: "ready", data: pool, intercept: "🏁 下班/放学铃声响起！自由的灵魂开始复苏，去逛超市、采购快乐吧！" };
+            }
+        }
+        
+        return { status: "ready", data: pool, intercept: null };
+    }
 
-            return { isSunday: false, pool: pool };
+    function createFloatingText() {
+        const textSpan = document.createElement('span');
+        textSpan.className = 'floating-text';
+        
+        const now = Date.now();
+        clickTimeBuffer = clickTimeBuffer.filter(t => now - t < 2000);
+        
+        let pool = clickTimeBuffer.length > 6 ? fastShakeWords : poolWords;
+        let selectedItem = pool[Math.floor(Math.random() * pool.length)];
+
+        if (selectedItem.type === "gold") {
+            textSpan.innerHTML = `🪙✨ ${selectedItem.text}`;
+            textSpan.classList.add('gold-style');
+        } else if (selectedItem.type === "luck") {
+            textSpan.innerHTML = `🧧 福 ${selectedItem.text}`;
+            textSpan.classList.add('luck-style');
+        } else {
+            textSpan.innerText = selectedItem.text;
         }
 
-        // 3. 页面初始化状态呈现
-        function initPage() {
-            const now = new Date();
-            const daysStr = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-            const timeString = `${now.getMonth()+1}月${now.getDate()}日 ${daysStr[day=now.getDay()]} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-            
-            const badge = document.getElementById("current-time-badge");
-            const btn = document.getElementById("btn-shake");
-            const poolPreview = document.getElementById("pool-preview");
-            
-            const status = generateDailyPool();
+        const viewport = document.getElementById('viewportCard');
+        const viewWidth = viewport.clientWidth;
+        const viewHeight = viewport.clientHeight;
+        let leftPos = 0;
 
-            if (status.isSunday) {
-                badge.innerText = `${timeString} 【玄门闭关】`;
-                badge.style.backgroundColor = "#e2e8f0";
-                badge.style.color = "#64748b";
-                
-                btn.disabled = true;
-                btn.innerText = "今日闭关休息";
-                
-                document.getElementById("placeholder-msg").innerText = "⚠️ 周日祖师爷休息，今日不宜抽签，请宿舍躺平安心休养。";
-                poolPreview.innerText = "今日签池：周日不提供抽签";
-            } else {
-                badge.innerText = `${timeString} 运势流转中`;
-                poolPreview.innerText = `今日签池共 ${status.pool.length} 灵签 (已包含当前时间生效词条)`;
-            }
+        if (sideToggle) {
+            leftPos = Math.random() * (viewWidth * 0.22) + 15;
+        } else {
+            leftPos = Math.random() * (viewWidth * 0.22) + (viewWidth * 0.72) - 15;
         }
+        sideToggle = !sideToggle;
 
-        // 4. 执行求签交互动画与结果抽取
-        let isShaking = false;
-        function startDivination() {
-            if (isShaking) return;
+        let topPos = (viewHeight * 0.42) + (Math.random() * 60);
+
+        textSpan.style.left = leftPos + 'px';
+        textSpan.style.top = topPos + 'px';
+
+        viewport.appendChild(textSpan);
+        setTimeout(() => textSpan.remove(), 1200);
+    }
+
+    function startDraw() {
+        clickTimeBuffer.push(Date.now());
+        totalDrawsInShortTime++;
+
+        const wrapper = document.getElementById('wrapper');
+        const stickContainer = document.getElementById('stickContainer');
+        const luckyStick = document.getElementById('luckyStick');
+        const luckyStickText = document.getElementById('luckyStickText');
+        const drawBtn = document.getElementById('drawBtn');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultValue = document.getElementById('resultValue');
+        const resultTag = document.getElementById('resultTag');
+        const resultComp = document.getElementById('resultCompliment');
+        const resultMission = document.getElementById('resultMission');
+        const resultMidnight = document.getElementById('resultMidnight');
+        const viewportCard = document.getElementById('viewportCard');
+        
+        document.body.classList.remove('golden-easter-egg');
+        viewportCard.classList.remove('golden-mode');
+        luckyStick.style.backgroundColor = "#118ab2";
+
+        luckyStick.classList.remove('fly-out-anim');
+        resultTitle.innerText = "灵签演道通玄奥，宝箓含神赐福祥...";
+        resultValue.innerText = "⚡";
+        resultTag.style.display = "none";
+        resultComp.style.display = "none";
+        resultMission.style.display = "none";
+        resultMidnight.style.display = "none";
+        drawBtn.disabled = true;
+
+        wrapper.classList.add('shaking');
+        stickContainer.classList.add('sticks-shaking');
+
+        const intervalTime = clickTimeBuffer.length > 5 ? 100 : 160;
+        const floatTimer = setInterval(createFloatingText, intervalTime);
+
+        setTimeout(() => {
+            clearInterval(floatTimer);
+            wrapper.classList.remove('shaking');
+            stickContainer.classList.remove('sticks-shaking');
+
+            const nowTime = new Date();
+            const poolResult = getAvailablePool();
             
-            const status = generateDailyPool();
-            if (status.isSunday) return;
-
-            isShaking = true;
-            
-            // UI 重置
-            document.getElementById("btn-shake").disabled = true;
-            document.getElementById("lucky-stick").classList.remove("flying");
-            document.getElementById("result-box").classList.remove("active");
-            
-            document.getElementById("placeholder-msg").style.display = "block";
-            document.getElementById("placeholder-msg").innerText = "🔮 诚心摇晃签筒，静候天机显现...";
-            document.getElementById("result-title").style.display = "none";
-            document.getElementById("result-poem").style.display = "none";
-
-            // 触发签条群晃动
-            const stickContainer = document.getElementById("stick-container");
-            stickContainer.classList.add("shaking");
-
-            // 1.2秒后停止晃动，抛出幸运签
-            setTimeout(() => {
-                stickContainer.classList.remove("shaking");
-                
-                // 随机抽取一个词条
-                const pool = status.pool;
-                const luckyLocation = pool[Math.floor(Math.random() * pool.length)];
-                const luckyPoem = POEM_DATABASE[luckyLocation] || "天机不泄，随缘而行。";
-
-                // 设置飞出签条的文字
-                document.getElementById("lucky-stick-text").innerText = luckyLocation;
-                document.getElementById("lucky-stick").classList.add("flying");
-
-                // 0.6秒飞签动画结束后呈现下方文字卡片
+            if (poolResult.status === "sunday_rest") {
+                luckyStickText.innerText = "偷懒大吉";
+                luckyStick.classList.add('fly-out-anim');
                 setTimeout(() => {
-                    document.getElementById("placeholder-msg").style.display = "none";
+                    resultTitle.innerText = "💤 【祖师爷偏心提示】";
+                    resultValue.innerText = "今天放假，偷懒无罪！";
+                    resultTag.innerText = "【神仙放假·特别定制签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = "✨ 今天是周日，天地磁场都在劝你理直气壮地躺平。不准焦虑、不准自我CPU，今天最大的任务就是把舒适度拉满，做个快乐的闲人！";
+                    resultComp.style.display = "block";
+                    drawBtn.innerText = "再摇一次功德";
+                    drawBtn.style.backgroundColor = "#ffca3a"; drawBtn.style.color = "#2b1f1d";
+                    drawBtn.disabled = false;
+                }, 300);
+                return;
+            }
+
+            if (nowTime.getDay() === 5 && Math.random() < 0.10) {
+                luckyStickText.innerText = "全免跑路";
+                luckyStick.style.backgroundColor = "#d4af37";
+                luckyStick.classList.add('fly-out-anim');
+                
+                document.body.classList.add('golden-easter-egg');
+                viewportCard.classList.add('golden-mode');
+
+                setTimeout(() => {
+                    resultTitle.innerText = "🏆 【神级暴运·天赐全免彩蛋】";
+                    resultValue.innerText = "周五跑路大满贯！";
+                    resultTag.innerText = signTags["周五跑路大满贯"];
+                    resultTag.style.display = "inline-block";
                     
-                    const titleEl = document.getElementById("result-title");
-                    const poemEl = document.getElementById("result-poem");
-                    const boxEl = document.getElementById("result-box");
+                    const compList = compliments["周五跑路大满贯"];
+                    resultComp.innerText = compList[Math.floor(Math.random() * compList.length)];
+                    resultComp.style.display = "block";
+                    
+                    resultMission.innerText = "💡 隐藏限定任务：立刻收拾包包，步伐嚣张地大步流星离开现场，一秒都不准多逗留！";
+                    resultMission.style.display = "block";
 
-                    titleEl.innerText = `【 上上签：${luckyLocation} 】`;
-                    poemEl.innerText = luckyPoem;
+                    drawBtn.innerText = "承蒙天意，高调跑路！";
+                    drawBtn.style.backgroundColor = "#ffa200"; drawBtn.style.color = "#fff";
+                    drawBtn.disabled = false;
+                }, 300);
+                return;
+            }
 
-                    titleEl.style.display = "block";
-                    poemEl.style.display = "block";
-                    boxEl.classList.add("active");
+            let currentPool = poolResult.data;
+            const randomIndex = Math.floor(Math.random() * currentPool.length);
+            let finalResult = currentPool[randomIndex];
 
-                    // 恢复按钮
-                    document.getElementById("btn-shake").disabled = false;
-                    isShaking = false;
-                }, 600);
+            if (finalResult === lastResult) {
+                repeatCount++;
+            } else {
+                repeatCount = 1;
+                lastResult = finalResult;
+            }
 
-            }, 1200);
-        }
+            luckyStickText.innerText = luckyIdioms[finalResult] || "今日宜行";
+            luckyStick.classList.add('fly-out-anim');
 
-        // 执行初始化
-        window.onload = initPage;
-    </script>
+            setTimeout(() => {
+                if (repeatCount >= 3) {
+                    resultTitle.innerText = "🔮 【抓包！命中注定的天意】";
+                    resultValue.innerText = `${finalResult} (第${repeatCount}次)`;
+                    resultTag.innerText = "【天道金牌·退无可退签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `🤣 怎么又是【${finalResult}】？！本签筒都已经尽力帮你打乱顺序了，结果还是它！别嘴硬和抵抗啦，这就是命中注定的选择。赶紧收拾收拾，顺应天意高调出发！`;
+                    resultComp.style.display = "block";
+                } 
+                else if (totalDrawsInShortTime >= 5) {
+                    resultTitle.innerText = "👑 【天道强制特赦令】";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = "【直接盲选·终结纠结签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `👀 别再挑啦！祖师爷看你反复摇晃了 ${totalDrawsInShortTime} 次，代表你的纠结磁场快超标了！现在听话，不要想了，闭眼选【${finalResult}】作为你的终极答案，立刻出发去迎接快乐！`;
+                    resultComp.style.display = "block";
+                } 
+                else if (poolResult.intercept) {
+                    // 如果命中了时间段，且没有触发连续相同/连刷惩罚，则额外展示时间段的逗趣评语
+                    resultTitle.innerText = "🎉 乾坤定夺！今日宜 ——";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `${poolResult.intercept}\n\n（针对本次结果评语）：${compliments[finalResult][Math.floor(Math.random() * compliments[finalResult].length)]}`;
+                    resultComp.style.display = "block";
+                }
+                else {
+                    resultTitle.innerText = "🎉 乾坤定夺！今日宜 ——";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                    resultTag.style.display = "inline-block";
+                    
+                    const compList = compliments[finalResult];
+                    resultComp.innerText = compList[Math.floor(Math.random() * compList.length)];
+                    resultComp.style.display = "block";
+                }
+
+                resultMission.innerText = missionPool[Math.floor(Math.random() * missionPool.length)];
+                resultMission.style.display = "block";
+
+                const now = new Date();
+                if (now.getHours() >= 23 || now.getHours() < 5) {
+                    resultMidnight.innerText = "🌙 (悄悄话：现在已经是深夜啦。不管今天摇到了去哪儿，现在的首要任务是盖好被子睡觉觉。明天睡醒了，好运自会陪你一同出发。晚安，全世界最棒的你。)";
+                    resultMidnight.style.display = "block";
+                }
+                
+                drawBtn.innerText = "不服气，再请一签";
+                drawBtn.style.backgroundColor = "#4caf50"; drawBtn.style.color = "#fff";
+                drawBtn.disabled = false;
+            }, 300);
+
+        }, 1100);
+    }
+
+    setInterval(() => { totalDrawsInShortTime = 0; }, 300000);
+    updateTimeHint();
+    setInterval(updateTimeHint, 60000);
+</script>
 </body>
 </html>
