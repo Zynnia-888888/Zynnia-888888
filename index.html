@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>时来运转</title>
+    <title>天机万事筒</title>
     <style>
         /* 基础复古宣纸风画布 */
         body {
             margin: 0;
             padding: 0;
             background-color: #f4edd8;
-            background-image: radial-gradient(rgba(230,215,185,0.3) 1px, transparent 0),
-                              radial-gradient(rgba(230,215,185,0.3) 1px, transparent 0);
+            background-image: radial-gradient(rgba(230,215,185,0.4) 1px, transparent 0),
+                              radial-gradient(rgba(230,215,185,0.4) 1px, transparent 0);
             background-size: 24px 24px;
             background-position: 0 0, 12px 12px;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -27,7 +27,7 @@
         .container {
             width: 100%;
             max-width: 420px;
-            padding: 20px 16px;
+            padding: 25px 18px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,28 +35,38 @@
             position: relative;
         }
 
-        /* 顶部大标题 */
+        /* 顶部古典标题区 */
         .header {
             text-align: center;
             margin-bottom: 25px;
+            position: relative;
         }
         .header h1 {
-            font-size: 30px;
+            font-size: 32px;
             font-weight: 900;
             color: #cc4c33;
-            margin: 0 0 6px 0;
-            letter-spacing: 3px;
+            margin: 0 0 8px 0;
+            letter-spacing: 4px;
             text-shadow: 2px 2px 0px #fff;
         }
         .header p {
             font-size: 13px;
             color: #7b6865;
             margin: 0;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
             font-weight: bold;
         }
+        .header::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #cc4c33;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
 
-        /* 交互环境主体 */
+        /* 交互环境主体舞台 */
         .stage {
             width: 100%;
             height: 280px;
@@ -64,10 +74,10 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
-        /* 大扁平手绘签筒组件 */
+        /* 扁平手绘签筒组件 */
         .cylinder-wrapper {
             position: relative;
             cursor: pointer;
@@ -110,7 +120,7 @@
             background-color: #2b1f1d;
             border-radius: 50%;
         }
-        /* 丰富木牌签群的多彩堆叠感 */
+        /* 多彩堆叠感 */
         .stick-in-pool:nth-child(1) { transform: rotate(-15deg); background-color: #f5b041; }
         .stick-in-pool:nth-child(2) { transform: rotate(-7deg); background-color: #f4d03f; height: 105px; z-index: 2;}
         .stick-in-pool:nth-child(3) { transform: rotate(0deg); background-color: #eb984e; height: 110px; z-index: 3;}
@@ -137,16 +147,15 @@
             transform: translate(-50%, -50%);
             background-color: #fff;
             border: 3px solid #2b1f1d;
-            padding: 8px 12px;
+            padding: 8px 14px;
             font-size: 16px;
             font-weight: 900;
             color: #2b1f1d;
             border-radius: 8px;
             white-space: nowrap;
-            box-shadow: 2px 2px 0px #2b1f1d;
+            box-shadow: 3px 3px 0px #2b1f1d;
             letter-spacing: 2px;
         }
-        /* 筒身复古镶边装饰 */
         .cylinder-rim {
             position: absolute;
             top: 0;
@@ -159,13 +168,13 @@
             box-sizing: border-box;
         }
 
-        /* 飞出的宽大金色吉签木牌 */
+        /* 飞出的宽大吉签 */
         .lucky-stick {
             position: absolute;
             bottom: 40px;
             left: 50%;
-            width: 48px;
-            height: 180px;
+            width: 52px;
+            height: 185px;
             background-color: #ffbe0b;
             border: 4px solid #2b1f1d;
             border-radius: 12px;
@@ -193,26 +202,26 @@
             height: 6px;
             background-color: #2b1f1d;
             border-radius: 50%;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .lucky-stick-text {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 900;
             color: #2b1f1d;
             writing-mode: vertical-rl;
             text-orientation: upright;
-            letter-spacing: 4px;
+            letter-spacing: 5px;
         }
 
-        /* 核心大抽签按钮 */
+        /* 摇签按钮 */
         .btn-draw {
             background-color: #ff6b6b;
             color: #fff;
             border: 4px solid #2b1f1d;
-            padding: 14px 40px;
+            padding: 14px 45px;
             font-size: 18px;
             font-weight: 900;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
             box-shadow: 4px 4px 0px #2b1f1d;
             letter-spacing: 2px;
@@ -230,7 +239,7 @@
             box-shadow: 4px 4px 0px #94a3b8;
         }
 
-        /* 结果展示卡片 */
+        /* 结果卡片 */
         .result-box {
             margin-top: 30px;
             width: 100%;
@@ -278,14 +287,14 @@
             text-align: left;
         }
 
-        /* 重构后的今日生活万事历：严格轴线中央对称 */
+        /* 完美严格对称轴线老黄历结构 */
         .almanac-card {
             width: 100%;
-            margin-top: 20px;
+            margin-top: 25px;
             background-color: #fdfcf7;
             border: 4px solid #2b1f1d;
             border-radius: 24px;
-            padding: 16px;
+            padding: 18px 16px;
             box-sizing: border-box;
             box-shadow: 5px 5px 0px #eedcc5;
             display: flex;
@@ -293,28 +302,25 @@
             align-items: center;
         }
         .almanac-header {
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 900;
             color: #2b1f1d;
             margin-bottom: 14px;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            letter-spacing: 2px;
         }
-        /* 双实线框体：保证宜忌内容在中心轴线上对称对齐 */
+        /* 古典粗木纹双实线包裹体 */
         .almanac-body {
             width: 100%;
-            border-top: 3px double #2b1f1d;
-            border-bottom: 3px double #2b1f1d;
-            padding: 12px 0;
+            border-top: 4px double #2b1f1d;
+            border-bottom: 4px double #2b1f1d;
+            padding: 14px 0;
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: flex-start;
             box-sizing: border-box;
         }
-        /* 划分左右黄金中轴对称区域 */
+        /* 左右平分：确保文字对齐在物理轴心线上 */
         .almanac-section {
             flex: 1;
             display: flex;
@@ -325,48 +331,53 @@
             padding: 0 4px;
         }
         .almanac-section:first-child {
-            border-right: 1px dashed #cbd5e1;
+            border-right: 2px dashed #2b1f1d;
         }
-        /* 规范化复古撞色 */
+        /* 规范化高级国潮撞色 */
         .almanac-label {
             font-size: 18px;
             font-weight: 900;
-            padding: 2px 12px;
+            padding: 3px 14px;
             border-radius: 6px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: inline-block;
+            letter-spacing: 1px;
+            border: 2px solid #2b1f1d;
         }
         .almanac-section.yi .almanac-label {
             background-color: #e2f4e9;
             color: #1b8a5a; /* 复古翡翠绿 */
+            box-shadow: 2px 2px 0px #1b8a5a;
         }
         .almanac-section.ji .almanac-label {
             background-color: #fce8e6;
             color: #cc4c33; /* 复古朱砂红 */
+            box-shadow: 2px 2px 0px #cc4c33;
         }
         .almanac-list {
-            font-size: 13px;
-            font-weight: 700;
-            color: #4a3532;
-            line-height: 1.8;
+            font-size: 14px;
+            font-weight: 800;
+            color: #2b1f1d;
+            line-height: 2.0;
         }
         .almanac-item {
-            margin: 2px 0;
+            margin: 4px 0;
             white-space: nowrap;
         }
 
-        /* 底部系统实时显示 */
+        /* 系统实时显示 */
         .footer-time {
             margin-top: 25px;
             font-size: 11px;
             color: #7b6865;
             font-weight: bold;
-            background-color: rgba(255,255,255,0.4);
-            padding: 4px 10px;
+            background-color: rgba(255,255,255,0.5);
+            padding: 4px 12px;
             border-radius: 20px;
+            border: 1px solid rgba(43,31,29,0.1);
         }
 
-        /* 飘动氛围字 */
+        /* 氛围漂移文字 */
         .floating-text {
             position: absolute;
             font-size: 14px;
@@ -378,7 +389,7 @@
             pointer-events: none;
         }
 
-        /* 动画群 */
+        /* 动画配置 */
         @keyframes handShake {
             0% { transform: translate(0, 0) rotate(0deg); }
             10% { transform: translate(-8px, 3px) rotate(-6deg); }
@@ -483,7 +494,7 @@
     </div>
 
     <script>
-        // 核心地点池与彻底去标签化的高能量彩虹屁词库
+        // 地点专属池与去标签高能量文案
         const pools = {
             "请假休息": [
                 "今天的选择太有智慧了！给生活按下暂停键，是为了以更饱满的姿态拥抱明天，尽情享受属于自己的无忧时光吧！",
@@ -543,7 +554,7 @@
             "瓜果市场": [
                 "踩着时间节点出发的你太准时了！这里充满了生活最本真的烟火气，新鲜饱满的色彩看一眼就让人心情大好！",
                 "午后前的限定快乐！去挑选那些刚出水灵、带着大自然生气的瓜果，咬一口都是满满的香甜与元气。",
-                "最接地气的元气补充站。看着摊位上色彩斑斓的水果，生活的幸福感就是这么简单而直接！"
+                "最接地气的元气补充站。看着摊位上色彩斑斓的水果，生活的幸福感就是简单而直接！"
             ],
             "明珠": [
                 "衣食住行的大卖场中超！这里就像是一个无所不包的宝藏基地，无论你想找寻什么家乡风味或生活必需，它都能一站式满足你，逛完安全感爆棚！",
@@ -551,36 +562,32 @@
                 "在明珠这个包罗万象的大卖场里，熟悉的食物、齐全的百货总能瞬间治愈一切。这不仅是一次采购，更是一场给生活全方位充电的满足之旅！"
             ],
             "二楼中超": [
-                "直奔目的地，满足你的味蕾期待！那些熟悉的味道拥有最神奇的治愈魔法，去带回属于你的那份专属快乐吧。",
-                "寻找舌尖上的熟悉慰藉，今天的生活多了一份让人安心的烟火气。满足感，往往就来自那一口家乡的味道。",
-                "极具针对性的幸福之旅。精准找到让你快乐的零食或食材，生活的小确幸就是这么好满足！"
+                "这里是专门置办生活家具、鞋包服饰的宝藏根据地。上去兜一圈，琳琅满目的实用居家物件、舒适的服饰鞋包，总能让你的私人生活空间和日常穿搭焕然一新！",
+                "抛开琐碎，今天去二楼置办几件舒心好看的衣服鞋包，或者淘一些贴心实用的生活小家具。把日常起居的环境打点得精致妥帖，也是爱生活的一种超棒方式！",
+                "极具针对性的探索旅程！在这个主打鞋包服饰与生活家具的专属层，挑选让居家和出行都更舒适的日常装备。看着被布置得更温馨的私人空间，满足感直接拉满。"
             ]
         };
 
-        // 周日休息拦截文案
         const sundayCompliment = "今天是专属于全身心休养的节点。万事筒也进入了静谧状态，不宜进行任何抉择与出行。平心静气、睡到自然醒、安稳地舒展身体，才是今天最正经、最舒适的头等大事！";
 
-        // 全量清除职业标签、面向所有人的通用高能量正能量文字池（抽签时作为氛围飘字）
         const weekdayFloatTexts = {
-            1: ["周一退散✨", "摸鱼有理🐟", "保持松弛🧘", "心态超稳💎", "今天真好看🌟"],
-            2: ["元气满满🔋", "生活万岁🎉", "平和喜乐🌈", "稳步前进🚶", "状态极佳粹✨"],
-            3: ["熬过周三!✨", "能量回满🔋", "允许放松☕", "渐入佳境🍁", "一切顺遂🍀"],
-            4: ["曙光在前☀️", "心情明朗😎", "自我关怀💖", "松弛感拉满🧘", "天天好运🧧"],
-            5: ["准备迎周末🎈", "心情飞起🚀", "自在舒畅欢🎉", "今天真棒💯", "快乐满格🔋"],
-            6: ["惬意周末舒☕", "享受当下漫🍃", "生活由我🎨", "惬意舒适得✨", "万事皆宜🧧"]
+            1: ["好运加持✨", "保持松弛🧘", "心态超稳💎", "今天真好看🌟"],
+            2: ["元气满满🔋", "生活万岁🎉", "平和喜乐🌈", "状态极佳✨"],
+            3: ["顺遂顺心!✨", "能量回满🔋", "允许放松☕", "渐入佳境🍁"],
+            4: ["曙光在前☀️", "心情明朗😎", "自我关怀💖", "自在舒畅🎉"],
+            5: ["自在快乐🎈", "心情飞起🚀", "好运连连🧧", "快乐满格🔋"],
+            6: ["享受当下☕", "生活由我🎨", "惬意舒适✨", "万事皆宜🧧"]
         };
 
-        // 统一在中心轴线对齐的老黄历词条库（去标签化、作息化）
-        const yiItems = ["合理摸鱼", "迟到五分钟", "狂喝冰美式", "听喜欢的歌", "看窗外发呆", "伸懒腰充能", "提前准备下班", "买个小零食", "保持平和心态", "大口呼吸新鲜空气"];
-        const jiItems = ["早起", "召开高压早会", "情绪紧紧绷绷", "过度焦虑", "强行解释", "盲目做大决定", "忽视身体信号", "步伐太急躁", "与无聊的事较真", "透支睡眠"];
+        // 彻底去除人群划分、普适大众、纯粹关注身心行为的精选词条池
+        const yiItems = ["舒缓拉伸", "发呆五分钟", "听喜欢的歌", "看窗外远眺", "喝杯温热茶", "深呼吸清心", "奖励个小零食", "整理私人空间", "保持平和心态"];
+        const jiItems = ["步伐太急躁", "情绪紧紧绷绷", "过度焦虑未来", "与无聊事较真", "强行勉强自己", "忽视身体信号", "盲目做大决定", "生活节奏打乱", "精神过度内耗"];
 
-        // 页面初始化
         window.onload = function() {
             updateSystemTimeAndAlmanac();
             setInterval(updateSystemTimeAndAlmanac, 1000);
         };
 
-        // 核心时间与老黄历渲染逻辑
         function updateSystemTimeAndAlmanac() {
             const now = new Date();
             const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
@@ -591,26 +598,25 @@
             
             document.getElementById('footerTime').innerText = `当前系统时间：${days[dayOfWeek]} ${hours}:${minutes}:${seconds}`;
 
-            // 根据星期固定更新下方老黄历
             const btn = document.getElementById('btnDraw');
             if (dayOfWeek === 0) {
                 btn.disabled = true;
                 btn.innerText = "今日休息";
-                renderStaticAlmanac(["安心躺平", "彻底放松", "睡到自然醒"], ["早起", "高压脑暴", "情绪紧绷"]);
+                renderStaticAlmanac(["安心躺平", "彻底放松", "睡到自然醒"], ["生活急躁", "情绪紧绷", "过度内耗"]);
             } else {
                 btn.disabled = false;
                 btn.innerText = "虔诚摇签";
                 
-                // 确保用户指定的词条必现，其余随机组合
-                let dailyYi = ["合理摸鱼", "迟到五分钟", "狂喝冰美式"];
-                let dailyJi = ["早起", "召开高压早会", "情绪紧紧绷绷"];
+                // 确保精选的核心无标签词条必然出现在最前面，绝不限制任何特定人群
+                let dailyYi = ["舒缓拉伸", "发呆五分钟", "听喜欢的歌"];
+                let dailyJi = ["步伐太急躁", "情绪紧紧绷绷", "过度焦虑未来"];
                 
-                // 再随机补充2个
-                while(dailyYi.length < 4) {
+                // 再随机各填充2个补充
+                while(dailyYi.length < 5) {
                     let r = yiItems[Math.floor(Math.random() * yiItems.length)];
                     if(!dailyYi.includes(r)) dailyYi.push(r);
                 }
-                while(dailyJi.length < 4) {
+                while(dailyJi.length < 5) {
                     let r = jiItems[Math.floor(Math.random() * jiItems.length)];
                     if(!dailyJi.includes(r)) dailyJi.push(r);
                 }
@@ -623,7 +629,6 @@
             document.getElementById('almanacJiList').innerHTML = jiArr.map(i => `<div class="almanac-item">${i}</div>`).join('');
         }
 
-        // 触发飘字氛围特效
         function spawnFloatingText() {
             const now = new Date();
             const dayOfWeek = now.getDay();
@@ -636,7 +641,6 @@
                     textNode.className = 'floating-text';
                     textNode.innerText = wordBank[Math.floor(Math.random() * wordBank.length)];
                     
-                    // 屏幕范围内较为均匀的随机分布
                     const randomX = Math.random() * 260 + 40;
                     const randomY = Math.random() * 120 + 80;
                     
@@ -650,7 +654,6 @@
             }
         }
 
-        // 执行摇签主要控制逻辑
         let isDrawing = false;
         function startDivination() {
             if (isDrawing) return;
@@ -659,7 +662,6 @@
             const dayOfWeek = now.getDay();
             const currentHour = now.getHours();
 
-            // 周日终极安全拦截
             if (dayOfWeek === 0) {
                 document.getElementById('resultTitle').innerText = "今日不宜抽签";
                 document.getElementById('resultCompliment').innerText = sundayCompliment;
@@ -670,70 +672,55 @@
             isDrawing = true;
             document.getElementById('btnDraw').disabled = true;
 
-            // 还原UI初始状态
             document.getElementById('luckyStick').style.display = "none";
             document.getElementById('luckyStick').classList.remove('anim-flyout');
             document.getElementById('resultTag').style.display = "none";
             document.getElementById('resultTitle').innerText = "正在窥弄天机...";
             document.getElementById('resultCompliment').innerText = "虔诚祈愿，签筒摇晃中。正在根据此时此刻的时间流转，为你过滤命定之中的生活去向...";
 
-            // 添加灵动的错位摇晃与颠簸动画
             document.getElementById('cylinderWrapper').classList.add('anim-shake');
             document.getElementById('stickPool').classList.add('anim-bumpy');
 
-            // 循环制造高能飘字
             spawnFloatingText();
 
-            // 1.2秒后停止摇晃并破空出签
             setTimeout(() => {
                 document.getElementById('cylinderWrapper').classList.remove('anim-shake');
                 document.getElementById('stickPool').classList.remove('anim-bumpy');
 
-                // 动态构建绝对符合当前时间规则的有效词条池
                 let availableLocations = [];
-
-                // 基础常规词条
                 const baseItems = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超"];
                 availableLocations.push(...baseItems);
 
-                // 条件词条1：Lidl（周三至周六全天触发）
                 if (dayOfWeek >= 3 && dayOfWeek <= 6) {
                     availableLocations.push("Lidl");
                 }
 
-                // 条件词条2：瓜果市场（14:00之前开放）
                 if (currentHour < 14) {
                     availableLocations.push("瓜果市场");
                 }
 
-                // 随机抽取命定签
                 const finalChoice = availableLocations[Math.floor(Math.random() * availableLocations.length)];
                 
-                // 渲染飞出的宽大木牌文字
                 let shortName = finalChoice;
-                if(shortName === "二楼中超") shortName = "中超";
+                if(shortName === "二楼中超") shortName = "鞋包服饰";
                 if(shortName === "请假休息") shortName = "休整";
                 if(shortName === "宿舍躺平") shortName = "躺平";
                 if(shortName === "瓜果市场") shortName = "瓜果";
                 document.getElementById('luckyStickText').innerText = shortName;
 
-                // 激活宽木签飞出特效
                 const luckyStick = document.getElementById('luckyStick');
                 luckyStick.style.display = "block";
                 luckyStick.classList.add('anim-flyout');
 
-                // 随机从专属池里抽出一句完全去标签化的高能量彩虹屁
                 const complimentsList = pools[finalChoice];
                 const selectedCompliment = complimentsList[Math.floor(Math.random() * complimentsList.length)];
 
-                // 结果面板最终呈现
                 setTimeout(() => {
                     document.getElementById('resultTag').innerText = "上上大吉签";
                     document.getElementById('resultTag').style.display = "inline-block";
                     document.getElementById('resultTitle').innerText = `【今日去向：${finalChoice}】`;
                     document.getElementById('resultCompliment').innerText = selectedCompliment;
 
-                    // 恢复按钮可用状态
                     document.getElementById('btnDraw').disabled = false;
                     isDrawing = false;
                 }, 400);
