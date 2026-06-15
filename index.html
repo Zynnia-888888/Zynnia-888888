@@ -3,729 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>天机万事筒</title>
+    <title>灵瑞问签筒</title>
     <style>
-        /* 基础复古宣纸风画布 */
-        body {
+        /* --- 高阶 UI 视觉设计 --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1c20 0%, #2a2e35 100%);
+            --cylinder-color: linear-gradient(180deg, #a67c52 0%, #7d522a 50%, #543111 100%);
+            --paper-bg: radial-gradient(circle, #fcf8f2 0%, #f4ebd9 100%);
+            --accent-gold: #dfb76c;
+            --text-dark: #3a352a;
+        }
+
+        /* 隐藏彩蛋金色皮肤 */
+        .gold-theme {
+            --bg-gradient: linear-gradient(135deg, #4a3718 0%, #1f1607 100%);
+            --cylinder-color: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #7851a9 100%);
+            --accent-gold: #fff3cc;
+            text-shadow: 0 0 8px rgba(255,215,0,0.5);
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #f4edd8;
-            background-image: radial-gradient(rgba(230,215,185,0.4) 1px, transparent 0),
-                              radial-gradient(rgba(230,215,185,0.4) 1px, transparent 0);
-            background-size: 24px 24px;
-            background-position: 0 0, 12px 12px;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            color: #2b1f1d;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-gradient);
+            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
-            overflow-x: hidden;
+            justify-content: space-between;
+            overflow: hidden;
+            color: #fff;
+            padding: 20px;
+            transition: background 1s ease;
         }
 
-        .container {
-            width: 100%;
-            max-width: 420px;
-            padding: 25px 18px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-sizing: border-box;
-            position: relative;
+        /* 国风云纹背景装饰 */
+        .bg-deco {
+            position: absolute;
+            top: 5%;
+            width: 90%;
+            height: 90%;
+            border: 1px solid rgba(223, 183, 108, 0.15);
+            pointer-events: none;
+            z-index: 1;
         }
 
-        /* 顶部古典标题区 */
-        .header {
+        /* 顶部提示 */
+        .header-hint {
+            z-index: 2;
             text-align: center;
-            margin-bottom: 25px;
-            position: relative;
+            margin-top: 15px;
         }
-        .header h1 {
-            font-size: 32px;
-            font-weight: 900;
-            color: #cc4c33;
-            margin: 0 0 8px 0;
+        .header-hint h1 {
+            font-size: 24px;
             letter-spacing: 4px;
-            text-shadow: 2px 2px 0px #fff;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+            font-weight: 400;
         }
-        .header p {
+        .header-hint p {
             font-size: 13px;
-            color: #7b6865;
-            margin: 0;
-            letter-spacing: 2px;
-            font-weight: bold;
-        }
-        .header::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 3px;
-            background: #cc4c33;
-            margin: 10px auto 0;
-            border-radius: 2px;
-        }
-
-        /* 交互环境主体舞台 */
-        .stage {
-            width: 100%;
-            height: 280px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            margin-bottom: 25px;
-        }
-
-        /* 扁平手绘签筒组件 */
-        .cylinder-wrapper {
-            position: relative;
-            cursor: pointer;
-            transform-origin: bottom center;
-            z-index: 10;
-        }
-        
-        /* 内部集成的粗厚木牌签群 */
-        .stick-pool {
-            position: absolute;
-            top: -65px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 110px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-        }
-        .stick-in-pool {
-            width: 24px;
-            height: 100px;
-            background-color: #e59866;
-            border: 3px solid #2b1f1d;
-            border-bottom: none;
-            border-radius: 6px 6px 0 0;
-            margin: 0 -5px;
-            transform-origin: bottom center;
-            position: relative;
-            box-sizing: border-box;
-        }
-        .stick-in-pool::before {
-            content: '';
-            position: absolute;
-            top: 6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 4px;
-            height: 4px;
-            background-color: #2b1f1d;
-            border-radius: 50%;
-        }
-        /* 多彩堆叠感 */
-        .stick-in-pool:nth-child(1) { transform: rotate(-15deg); background-color: #f5b041; }
-        .stick-in-pool:nth-child(2) { transform: rotate(-7deg); background-color: #f4d03f; height: 105px; z-index: 2;}
-        .stick-in-pool:nth-child(3) { transform: rotate(0deg); background-color: #eb984e; height: 110px; z-index: 3;}
-        .stick-in-pool:nth-child(4) { transform: rotate(8deg); background-color: #f4d03f; height: 103px; z-index: 2;}
-        .stick-in-pool:nth-child(5) { transform: rotate(18deg); background-color: #f5b041; }
-
-        /* 外观大签筒 */
-        .cylinder {
-            width: 150px;
-            height: 140px;
-            background-color: #e85d44;
-            border: 4px solid #2b1f1d;
-            border-radius: 0 0 25px 25px;
-            box-shadow: 6px 6px 0px #2b1f1d;
-            position: relative;
-            overflow: visible;
-            box-sizing: border-box;
-        }
-        .cylinder::after {
-            content: "万事皆宜";
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: #fff;
-            border: 3px solid #2b1f1d;
-            padding: 8px 14px;
-            font-size: 16px;
-            font-weight: 900;
-            color: #2b1f1d;
-            border-radius: 8px;
-            white-space: nowrap;
-            box-shadow: 3px 3px 0px #2b1f1d;
-            letter-spacing: 2px;
-        }
-        .cylinder-rim {
-            position: absolute;
-            top: 0;
-            left: -4px;
-            width: 150px;
-            height: 16px;
-            background-color: #ffbe0b;
-            border: 4px solid #2b1f1d;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* 飞出的宽大吉签 */
-        .lucky-stick {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            width: 52px;
-            height: 185px;
-            background-color: #ffbe0b;
-            border: 4px solid #2b1f1d;
-            border-radius: 12px;
-            box-shadow: 5px 5px 0px rgba(0,0,0,0.15);
-            display: none;
-            z-index: 5;
-            box-sizing: border-box;
-            padding: 12px 4px;
-            transform-origin: center center;
-        }
-        .lucky-stick-inner {
-            width: 100%;
-            height: 100%;
-            border: 2px dashed #2b1f1d;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .lucky-stick-hole {
-            width: 6px;
-            height: 6px;
-            background-color: #2b1f1d;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-        .lucky-stick-text {
-            font-size: 18px;
-            font-weight: 900;
-            color: #2b1f1d;
-            writing-mode: vertical-rl;
-            text-orientation: upright;
-            letter-spacing: 5px;
-        }
-
-        /* 摇签按钮 */
-        .btn-draw {
-            background-color: #ff6b6b;
-            color: #fff;
-            border: 4px solid #2b1f1d;
-            padding: 14px 45px;
-            font-size: 18px;
-            font-weight: 900;
-            border-radius: 25px;
-            cursor: pointer;
-            box-shadow: 4px 4px 0px #2b1f1d;
-            letter-spacing: 2px;
-            transition: background-color 0.2s, transform 0.1s, box-shadow 0.1s;
-        }
-        .btn-draw:active {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0px #2b1f1d;
-        }
-        .btn-draw:disabled {
-            background-color: #cbd5e1;
-            color: #94a3b8;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: 4px 4px 0px #94a3b8;
-        }
-
-        /* 结果卡片 */
-        .result-box {
-            margin-top: 30px;
-            width: 100%;
-            min-height: 140px;
-            padding: 22px;
-            border-radius: 24px;
-            background-color: #fdfcf7;
-            border: 4px solid #2b1f1d;
-            box-shadow: 5px 5px 0px #eedcc5;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .result-title {
-            font-size: 22px;
-            font-weight: 900;
-            color: #cc4c33;
-            margin-bottom: 4px;
-        }
-        .result-tag {
-            font-size: 11px;
-            background: #cc4c33;
-            color: #fff;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin-bottom: 12px;
-            display: none;
+            opacity: 0.7;
             letter-spacing: 1px;
         }
-        .result-compliment {
-            font-size: 14px;
-            color: #4a3532;
-            font-weight: 700;
-            line-height: 1.6;
-            background-color: #fff5e6;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 2px dashed #2b1f1d;
-            width: 100%;
-            box-sizing: border-box;
-            text-align: left;
-        }
 
-        /* 完美严格对称轴线老黄历结构 */
-        .almanac-card {
+        /* 中轴线动画核心容器 */
+        .stage {
+            position: relative;
             width: 100%;
-            margin-top: 25px;
-            background-color: #fdfcf7;
-            border: 4px solid #2b1f1d;
-            border-radius: 24px;
-            padding: 18px 16px;
-            box-sizing: border-box;
-            box-shadow: 5px 5px 0px #eedcc5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .almanac-header {
-            font-size: 16px;
-            font-weight: 900;
-            color: #2b1f1d;
-            margin-bottom: 14px;
-            letter-spacing: 2px;
-        }
-        /* 古典粗木纹双实线包裹体 */
-        .almanac-body {
-            width: 100%;
-            border-top: 4px double #2b1f1d;
-            border-bottom: 4px double #2b1f1d;
-            padding: 14px 0;
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-            align-items: flex-start;
-            box-sizing: border-box;
-        }
-        /* 左右平分：确保文字对齐在物理轴心线上 */
-        .almanac-section {
             flex: 1;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            text-align: center;
-            box-sizing: border-box;
-            padding: 0 4px;
-        }
-        .almanac-section:first-child {
-            border-right: 2px dashed #2b1f1d;
-        }
-        /* 规范化高级国潮撞色 */
-        .almanac-label {
-            font-size: 18px;
-            font-weight: 900;
-            padding: 3px 14px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            display: inline-block;
-            letter-spacing: 1px;
-            border: 2px solid #2b1f1d;
-        }
-        .almanac-section.yi .almanac-label {
-            background-color: #e2f4e9;
-            color: #1b8a5a; /* 复古翡翠绿 */
-            box-shadow: 2px 2px 0px #1b8a5a;
-        }
-        .almanac-section.ji .almanac-label {
-            background-color: #fce8e6;
-            color: #cc4c33; /* 复古朱砂红 */
-            box-shadow: 2px 2px 0px #cc4c33;
-        }
-        .almanac-list {
-            font-size: 14px;
-            font-weight: 800;
-            color: #2b1f1d;
-            line-height: 2.0;
-        }
-        .almanac-item {
-            margin: 4px 0;
-            white-space: nowrap;
+            z-index: 2;
         }
 
-        /* 系统实时显示 */
-        .footer-time {
-            margin-top: 25px;
-            font-size: 11px;
-            color: #7b6865;
-            font-weight: bold;
-            background-color: rgba(255,255,255,0.5);
-            padding: 4px 12px;
-            border-radius: 20px;
-            border: 1px solid rgba(43,31,29,0.1);
-        }
-
-        /* 氛围漂移文字 */
-        .floating-text {
+        /* 确保签筒彻底居中对齐 */
+        .cylinder-wrapper {
             position: absolute;
-            font-size: 14px;
-            font-weight: 900;
-            color: #ffae19;
-            text-shadow: 1px 1px 0px #2b1f1d;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 260px;
+            cursor: pointer;
+        }
+
+        /* 签筒立体美化 */
+        .cylinder {
+            width: 100%;
+            height: 100%;
+            background: var(--cylinder-color);
+            border-radius: 12px 12px 24px 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.2);
+            border: 2px solid var(--accent-gold);
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 签筒顶部阴影深邃感 */
+        .cylinder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px 10px 0 0;
+        }
+
+        /* 签筒内部的竹签们 */
+        .sticks {
+            position: absolute;
+            bottom: 40px;
+            width: 80px;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            transition: transform 0.1s ease;
+        }
+
+        .stick {
+            width: 6px;
+            height: 160px;
+            background: #d0a374;
+            border-radius: 3px 3px 0 0;
+            margin: 0 -1px;
+            border: 1px solid #9c6d43;
+            transform-origin: bottom center;
+        }
+        .stick:nth-child(odd) { height: 170px; background: #c29566; }
+        .stick:nth-child(3n) { transform: rotate(4deg); }
+        .stick:nth-child(3n+1) { transform: rotate(-4deg); }
+        .stick:nth-child(5n) { transform: rotate(2deg); }
+
+        /* --- 正中轴线摇晃动画 --- */
+        @keyframes shakeAxis {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            15% { transform: translate(-50%, -53%) rotate(8deg); }
+            30% { transform: translate(-50%, -47%) rotate(-8deg); }
+            45% { transform: translate(-50%, -52%) rotate(6deg); }
+            60% { transform: translate(-50%, -48%) rotate(-6deg); }
+            75% { transform: translate(-50%, -51%) rotate(3deg); }
+            90% { transform: translate(-50%, -49%) rotate(-3deg); }
+            100% { transform: translate(-50%, -50%) rotate(0deg); }
+        }
+
+        .shaking {
+            animation: shakeAxis 0.5s ease-in-out infinite;
+        }
+
+        /* 跃出的单根竹签 */
+        .lucky-stick {
+            position: absolute;
+            width: 12px;
+            height: 190px;
+            background: #be2323;
+            border: 1px solid var(--accent-gold);
+            border-radius: 4px;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(50px);
             opacity: 0;
-            z-index: 99;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+        .lucky-stick span {
+            color: #fff;
+            font-size: 10px;
+            writing-mode: vertical-rl;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        @keyframes stickOut {
+            0% { transform: translateX(-50%) translateY(50px); opacity: 0; }
+            50% { transform: translateX(-50%) translateY(-60px) rotate(5deg); opacity: 1; }
+            100% { transform: translateX(-50%) translateY(10px); opacity: 0; }
+        }
+        .stick-anim {
+            animation: stickOut 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        /* --- 手机端现代国风圆弧倒角视觉框 --- */
+        .result-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            padding: 24px;
+        }
+        .result-mask.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* 重点优化：大圆弧倒角柔边视觉框 */
+        .result-card {
+            background: var(--paper-bg);
+            border: 1px solid rgba(138, 109, 59, 0.3);
+            border-radius: 24px; /* 契合手机端高阶全面屏的圆弧倒角 */
+            width: 100%;
+            max-width: 330px;
+            padding: 32px 24px;
+            color: var(--text-dark);
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(223, 183, 108, 0.2);
+            position: relative;
+            transform: scale(0.85);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        }
+        .result-mask.show .result-card {
+            transform: scale(1);
+        }
+
+        /* 内部圆弧勾边，形成双层层次感 */
+        .result-card::after {
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border: 1px dashed rgba(138, 109, 59, 0.25);
+            border-radius: 18px; /* 内部同步圆弧 */
             pointer-events: none;
         }
 
-        /* 动画配置 */
-        @keyframes handShake {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            10% { transform: translate(-8px, 3px) rotate(-6deg); }
-            20% { transform: translate(6px, -4px) rotate(7deg); }
-            30% { transform: translate(-7px, 2px) rotate(-5deg); }
-            40% { transform: translate(5px, -3px) rotate(6deg); }
-            50% { transform: translate(-6px, 4px) rotate(-6deg); }
-            60% { transform: translate(6px, -2px) rotate(5deg); }
-            70% { transform: translate(-4px, 1px) rotate(-4deg); }
-            80% { transform: translate(4px, -3px) rotate(4deg); }
-            90% { transform: translate(-2px, 2px) rotate(-2deg); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
-        .anim-shake {
-            animation: handShake 1.1s ease-in-out infinite;
+        .result-location {
+            font-size: 22px;
+            font-weight: 600;
+            color: #be2323;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            border-bottom: 1px dashed rgba(138, 109, 59, 0.3);
+            padding-bottom: 12px;
         }
 
-        @keyframes stickBumpy {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            25% { transform: translateY(-22px) rotate(-8deg); }
-            50% { transform: translateY(5px) rotate(4deg); }
-            75% { transform: translateY(-18px) rotate(6deg); }
-        }
-        .anim-bumpy {
-            animation: stickBumpy 0.28s ease-in-out infinite;
-        }
-
-        @keyframes stickFlyOut {
-            0% { transform: translate(-50%, 0) scale(0.4) rotate(0deg); opacity: 0; display: block; bottom: 40px; }
-            50% { transform: translate(-50%, -150px) scale(1.1) rotate(180deg); opacity: 1; }
-            75% { transform: translate(-50%, -110px) scale(1.05) rotate(370deg); opacity: 1; }
-            100% { transform: translate(-50%, -120px) scale(1) rotate(360deg); opacity: 1; bottom: 40px; }
-        }
-        .anim-flyout {
-            animation: stickFlyOut 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        .result-poem {
+            font-size: 16px;
+            line-height: 1.8;
+            letter-spacing: 1px;
+            font-weight: 500;
+            margin-bottom: 22px;
+            color: #2b2b2b;
         }
 
-        @keyframes textFloatUp {
-            0% { transform: translateY(0) scale(0.8); opacity: 0; }
-            20% { opacity: 1; transform: translateY(-20px) scale(1.1); }
-            80% { opacity: 0.9; }
-            100% { transform: translateY(-70px) scale(0.9); opacity: 0; }
+        .result-analysis {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #4a4a4a;
+            background: rgba(138, 109, 59, 0.06);
+            padding: 16px;
+            border-radius: 14px; /* 内部板块圆弧倒角 */
+            margin-bottom: 24px;
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+
+        .close-btn {
+            background: #be2323;
+            color: #fff;
+            border: none;
+            padding: 12px 36px;
+            font-size: 14px;
+            letter-spacing: 2px;
+            border-radius: 50px; /* 胶囊圆弧形按钮，完美适配现代UI */
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(190,35,35,0.3);
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .close-btn:active {
+            background: #9a1c1c;
+        }
+
+        /* 底部说明 */
+        .footer-info {
+            z-index: 2;
+            font-size: 12px;
+            opacity: 0.4;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        
-        <div class="header">
-            <h1>天机万事筒</h1>
-            <p>诚心问卜 · 指点今日生活去向</p>
-        </div>
+    <div class="bg-deco"></div>
 
-        <div class="stage">
-            <div class="cylinder-wrapper" id="cylinderWrapper">
-                <div class="stick-pool" id="stickPool">
-                    <div class="stick-in-pool"></div>
-                    <div class="stick-in-pool"></div>
-                    <div class="stick-in-pool"></div>
-                    <div class="stick-in-pool"></div>
-                    <div class="stick-in-pool"></div>
-                </div>
-                <div class="cylinder">
-                    <div class="cylinder-rim"></div>
+    <div class="header-hint">
+        <h1 id="title-text">灵瑞问签筒</h1>
+        <p id="flow-hint">凝神静气，摇晃签筒或轻触问卜</p>
+    </div>
+
+    <div class="stage">
+        <div class="cylinder-wrapper" id="cylinderWrapper">
+            <div class="cylinder">
+                <div class="sticks">
+                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
+                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
+                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
                 </div>
             </div>
             <div class="lucky-stick" id="luckyStick">
-                <div class="lucky-stick-inner">
-                    <div class="lucky-stick-hole"></div>
-                    <div class="lucky-stick-text" id="luckyStickText">出行</div>
-                </div>
+                <span>灵签既出</span>
             </div>
         </div>
+    </div>
 
-        <button class="btn-draw" id="btnDraw" onclick="startDivination()">虔诚摇签</button>
+    <div class="footer-info">天地时序 · 随心问卜</div>
 
-        <div class="result-box">
-            <div class="result-tag" id="resultTag">有求必应</div>
-            <div class="result-title" id="resultTitle">摇动万事筒以窥天机</div>
-            <div class="result-compliment" id="resultCompliment">每日出门、抉择或纠结前，不妨平心静气摇晃签筒。不设限、不贴标签，用积极舒畅的心态开启当下的生活。</div>
+    <div class="result-mask" id="resultMask">
+        <div class="result-card">
+            <div class="result-location" id="resLocation">-</div>
+            <div class="result-poem" id="resPoem">-</div>
+            <div class="result-analysis" id="resAnalysis">-</div>
+            <button class="close-btn" onclick="closeResult()">承领此签</button>
         </div>
-
-        <div class="almanac-card">
-            <div class="almanac-header">📅 今日生活万事历</div>
-            <div class="almanac-body">
-                <div class="almanac-section yi">
-                    <div class="almanac-label">宜</div>
-                    <div class="almanac-list" id="almanacYiList">
-                        </div>
-                </div>
-                <div class="almanac-section ji">
-                    <div class="almanac-label">忌</div>
-                    <div class="almanac-list" id="almanacJiList">
-                        </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-time" id="footerTime">当前系统时间：载入中...</div>
-
     </div>
 
     <script>
-        // 地点专属池与去标签高能量文案
-        const pools = {
+        // --- 完全中立、零状态假设、纯地理与自然描摹的文案池 ---
+        const poolData = {
             "请假休息": [
-                "今天的选择太有智慧了！给生活按下暂停键，是为了以更饱满的姿态拥抱明天，尽情享受属于自己的无忧时光吧！",
-                "此时此刻，没有比彻底放松更有价值的事了。舒舒服服地休整，你的身心值得这份温柔的犒劳！",
-                "明智的选择！抛开所有的繁杂与束缚，今天你只属于自己，每一分钟的闲暇都亮晶晶的。"
+                { poem: "久在樊笼里，复得返自然。", text: "空间指示：此去宜归向自处之境，闭门谢客，或于静止中观察周遭物理变化。" },
+                { poem: "身在此山中，云深不知处。", text: "空间指示：当前利于切断向外传导的射线，处于隐匿、留白与不可见的状态中。" }
             ],
             "Lidl": [
-                "哇！能够顺利触发这个选项，说明你完美地度过了前几日的节奏。去收获一波新鲜与快乐，犒劳一下自己吧！",
-                "今天的步伐轻盈又有节奏。向着极具性价比的生活好物出发，你总是能在平淡的日常里找到满满的获得感！",
-                "这个时间节点刚刚好，去转一圈总能发现意想不到的小惊喜，生活就是这样在精打细算中充满乐趣。"
+                { poem: "满筐圆实骊珠滑，入口甘香冰玉寒。", text: "空间指示：地缘向西或西南，属于货殖流通、物资聚合之所，利于观察生活物资的罗列。" },
+                { poem: "日中集市乾坤大，物华天宝各西东。", text: "空间指示：前往多流线、多标价的现世流转地，可在规律的货架动线中完成一次空间穿梭。" }
             ],
             "随便转转": [
-                "没有目的地才是最棒的冒险。漫无目的地走走，生活的美好往往就藏在下一个不经意的转角处！",
-                "把身心交给风和自由，今天就用最松弛的视角去观察世界，每一朵云、每一缕风都是为你准备的礼物。",
-                "不设限的时光最迷人。随意看看、随意听听，今天是一场完全由你掌控的、没有终点的舒心漫游。"
+                { poem: "步履无心随处好，风光不墨画图新。", text: "空间指示：不设定经纬度与目的地。随外部地势起伏而移动，随机截取下一刻撞见的环境断面。" },
+                { poem: "流水下山非有意，片云归洞本无心。", text: "空间指示：当前处于无阻尼的状态。不设动线规划，视线落在何处，脚步即向何处衍生。" }
             ],
             "公园散步": [
-                "去大自然里收集绿色吧！呼吸一下新鲜空气，让泥土与花草的芬芳洗净所有的疲惫，磁场瞬间充满正能量！",
-                "阳光在树叶间跳舞，今天非常适合去树荫下走走。感受自然的韵律，整个人都会变得轻盈而安宁。",
-                "踏入那片绿意，耳边是鸟鸣和风声。这是最棒的天然解压方式，今天的生活节奏由你慢慢掌控。"
+                { poem: "林深时见鹿，溪午不闻钟。", text: "空间指示：走向含有林木、泥土与开阔空间的绿色生态场。在这里，声音的传播频率将因植物的吸附而发生改变。" },
+                { poem: "清风拂面不胜轻，独步草青意自平。", text: "空间指示：户外开阔环境。头顶无人工建筑遮挡，视野地平线无限延伸，适合物理空间上的匀速位移。" }
             ],
             "巡视果园": [
-                "极具格调的去向！去看看那些蓬勃生长的生机，感受大自然孕育的饱满与甜蜜，你也会沾满一身的好福气！",
-                "在充满果香和生命力的地方走一走，心情会像熟透的果实一样甜美、充实，今天是个丰收般的好日子。",
-                "去贴近大地的脉搏，看看植物的成长。这种脚踏实地的踏实感，会给你带来加倍的笃定与快乐。"
+                { poem: "枝头累累皆因果，静待时时造化功。", text: "空间指示：前往含有生命孕育周期、植物正在挂果或处于成熟期的观测点，见证时间在客观物质上的留痕。" },
+                { poem: "满园葱郁皆生意，静看造物运乾坤。", text: "空间指示：此方空间具有强烈的向下扎根属性。适合观察叶绿素与水分在土壤环境中的静态表达。" }
             ],
             "宿舍躺平": [
-                "完美的舒适圈体验！舒舒服服地舒展身体，让疲惫在柔软的床榻间烟消云散，静止的时光同样充满能量！",
-                "今天最适合开启‘充能模式’。合理地无所事事，是最高级的精神SPA，安心享受这份宁静吧。",
-                "把世界的嘈杂关在门外，今天的主题就是彻底地舒适与安逸。放松呼吸，感受纯粹的轻松。"
+                { poem: "一榻清风天地阔，半窗明月心神闲。", text: "空间指示：处于私密且具有边界的固定方寸内。躯体保持水平重力分布，视线与天花板平行。" },
+                { poem: "虚室生白吉祥地，闭门即是深山中。", text: "空间指示：拉起物理阻隔（窗帘/门锁），在独立构筑的立方体空间内，切断一切外部声光干扰。" }
             ],
             "IDEA": [
-                "去逛生活品超市太治愈了！置身于那些温馨的居家场景和别致的小物件中，总能淘到让日常生活更有情趣的精美法宝。",
-                "IDEA简直是提升生活幸福感的灵感圣地。去逛逛吧，挑一件心仪的生活小品，为自己的私人空间增添一份独一无二的小美好！",
-                "这里的氛围总是充满着对生活的细腻热爱。在货架间漫步，寻找那些能触动心灵的温馨细节，今天也是懂得爱自己的一天。"
+                { poem: "灵台无物常通达，智刃闪烁断纷纭。", text: "空间指示：利于开展逻辑推演、秩序重组或对复杂代码、信息的深度解析，处于极高密度的脑部交互状态。" },
+                { poem: "千淘万漉虽辛苦，吹尽狂沙始到金。", text: "空间指示：当前的场景适合面对那些繁复、细碎、高结构化的任务，通过纠错与修正完成逻辑闭环。" }
             ],
             "老Maxi": [
-                "熟悉的传统街区步调，总能带给人无比踏实的安全感。去兜一圈，把生活的必需品安排得稳稳当当！",
-                "在熟悉温馨的氛围里慢悠悠地逛逛，挑选合心意的日常物件，这种稳妥而微小的确幸最能治愈人心。",
-                "经典的去处从不让人失望。带着轻松的心情去采购，把生活打理得井井有条，你的状态棒极了！"
+                { poem: "古朴货架藏旧岁，人间烟火最抚心。", text: "空间指示：前往一处具备时间累积感、货品结构极其稳定的传统大型物理空间，动线熟悉，少有未知干扰。" },
+                { poem: "旧地重游意自如，所需皆在方寸间。", text: "空间指示：高确定性的熟稔场所。不需要应对任何突发的新视觉刺激，按部就班即可获取所需物质。" }
             ],
             "新Maxi": [
-                "宽敞明亮的新空间，连逛起来的心情都会跟着变得格外开阔！去感受现代化的舒适体验，发现更多好物吧。",
-                "新环境新气象，现代感的陈列总能带来满满的视觉舒适。在宽敞的通道里漫步，尽情享受升级版的采购乐趣！",
-                "体验非常好的一趟旅程！不仅能高效置办齐所需物品，还能顺便换个心情，享受明朗舒畅的氛围。"
+                { poem: "琳琅满目开新境，气象万千驻心头。", text: "空间指示：现代、高挑高、强采光的大型复合商业空间。流线设计充满现代工业律动，视觉明快。" },
+                { poem: "宏阔空间宽视野，推陈出新运转换。", text: "空间指示：处于宽敞、宽步道、光影折射率高的空间。物理视野的骤然开阔，利于转换长期处于逼仄环境的视线。" }
             ],
             "Lilly": [
-                "今天适合去打理一下自己的精致生活。在琳琅满目的个人护理与美好香气中，给自己多一分温柔的关爱！",
-                "逛这里总能让人心情变好。挑选一些能让状态更出彩、生活更舒适的小细节，你总是如此懂得经营生活。",
-                "生活需要一些精致的仪式感。去挑选属于你的专属舒适好物，今天整个人都要散发闪闪发亮的正能量！"
+                { poem: "暗香浮动因风起，明镜妆台照素华。", text: "空间指示：前往注重身体微观感知、气味分子浓度高、或者提供个表修饰物资的局部精致空间。" },
+                { poem: "精致生活无别法，细微深处见真淳。", text: "空间指示：把注意力回收至个体的表皮层与细微气味上。此去所涉环境，色彩通常呈现出轻快、柔和的调性。" }
             ],
             "DM": [
-                "充满探索乐趣的地方！德系个护和实用生活好物的聚集地，去转转总能淘到既有创意又贴心的小法宝。",
-                "注重细节与生活品质的你，跟这里的气场最搭了。随意走走看，总有能让日常幸福感悄悄加分的小惊喜！",
-                "在这里总能找到把日子过得更精细的灵感。挑几样实用又温和的心仪小物，让今天的松弛感拉满。"
+                { poem: "万物条理皆井然，随心取用最相宜。", text: "空间指示：强实用主义、高分类精细度的现代生活补给站。其陈列规律极度严谨，极易寻找对应物。" },
+                { poem: "草本清香安神魄，日常点滴润身心。", text: "空间指示：充斥着植物提取液、日常护理试剂的标准化零售场所，可在微量元素的排列组合中游走。" }
             ],
             "瓜果市场": [
-                "踩着时间节点出发的你太准时了！这里充满了生活最本真的烟火气，新鲜饱满的色彩看一眼就让人心情大好！",
-                "午后前的限定快乐！去挑选那些刚出水灵、带着大自然生气的瓜果，咬一口都是满满的香甜与元气。",
-                "最接地气的元气补充站。看着摊位上色彩斑斓的水果，生活的幸福感就是简单而直接！"
+                { poem: "红杏碧桃依绿水，新丝青蔓绕荒畦。", text: "空间指示：大自然高含水量、高色彩饱和度产物的集散中心。在这里可以直观触碰到高频的生命新陈代谢痕迹。" },
+                { poem: "五色斑斓皆生意，饱满多汁运亨通。", text: "空间指示：空气中带有果酸与植物纤维的天然混合气味，适合在此空间内调动最基础的色泽与嗅觉感知。" }
             ],
             "明珠": [
-                "衣食住行的大卖场中超！这里就像是一个无所不包的宝藏基地，无论你想找寻什么家乡风味或生活必需，它都能一站式满足你，逛完安全感爆棚！",
-                "作为能解决衣食住行一切需求的超级大卖场，明珠总能带给你无与伦比的归属感。进去转一圈，把生活所需的能量和物资一次性补充满满！",
-                "在明珠这个包罗万象的大卖场里，熟悉的食物、齐全的百货总能瞬间治愈一切。这不仅是一次采购，更是一场给生活全方位充电的满足之旅！"
+                { poem: "沧海月明珠有泪，蓝田日暖玉生烟。", text: "空间指示：带有特定东方饮食文化或传统地缘风味符号的磁场空间，适合寻觅具有血脉熟悉度的特定物质。" },
+                { poem: "风味不改初心在，珍重人间聚散时。", text: "空间指示：在特定的风味环境中，热量通过食物介质完成物理层面的转移，能使身体指标获得最直接的充盈。" }
             ],
             "二楼中超": [
-                "这里是专门置办生活家具、鞋包服饰的宝藏根据地。上去兜一圈，琳琅满目的实用居家物件、舒适的服饰鞋包，总能让你的私人生活空间和日常穿搭焕然一新！",
-                "抛开琐碎，今天去二楼置办几件舒心好看的衣服鞋包，或者淘一些贴心实用的生活小家具。把日常起居的环境打点得精致妥帖，也是爱生活的一种超棒方式！",
-                "极具针对性的探索旅程！在这个主打鞋包服饰与生活家具的专属层，挑选让居家和出行都更舒适的日常装备。看着被布置得更温馨的私人空间，满足感直接拉满。"
+                { poem: "琼楼玉宇藏珍货，百味翻腾会心笑。", text: "空间指示：物理高度需要拾级而上。在这个需要垂直位移才能抵达的空间内，存留着大量熟悉的地缘特产。" },
+                { poem: "拾级而上风光异，此中滋味自心知。", text: "空间指示：转换高度，向垂直上方的空间探索。在带有浓厚熟悉包裹感的氛围里，完成一次物质的获取。" }
             ]
         };
 
-        const sundayCompliment = "今天是专属于全身心休养的节点。万事筒也进入了静谧状态，不宜进行任何抉择与出行。平心静气、睡到自然醒、安稳地舒展身体，才是今天最正经、最舒适的头等大事！";
-
-        const weekdayFloatTexts = {
-            1: ["好运加持✨", "保持松弛🧘", "心态超稳💎", "今天真好看🌟"],
-            2: ["元气满满🔋", "生活万岁🎉", "平和喜乐🌈", "状态极佳✨"],
-            3: ["顺遂顺心!✨", "能量回满🔋", "允许放松☕", "渐入佳境🍁"],
-            4: ["曙光在前☀️", "心情明朗😎", "自我关怀💖", "自在舒畅🎉"],
-            5: ["自在快乐🎈", "心情飞起🚀", "好运连连🧧", "快乐满格🔋"],
-            6: ["享受当下☕", "生活由我🎨", "惬意舒适✨", "万事皆宜🧧"]
+        // 金色隐藏彩蛋
+        const goldEgg = {
+            location: "【天道乾坤 · 万象皆空】",
+            poem: "天道清明，万缘放下；今日无羁，云淡风轻。",
+            analysis: "规序提示：触发十里挑一的【万象皆空】概率。在此时空维度下，不设规律，不受限制，无需符合任何空间或作息定义，万物皆在自由态，任你自流转。"
         };
 
-        // 彻底去除人群划分、普适大众、纯粹关注身心行为的精选词条池
-        const yiItems = ["舒缓拉伸", "发呆五分钟", "听喜欢的歌", "看窗外远眺", "喝杯温热茶", "深呼吸清心", "奖励个小零食", "整理私人空间", "保持平和心态"];
-        const jiItems = ["步伐太急躁", "情绪紧紧绷绷", "过度焦虑未来", "与无聊事较真", "强行勉强自己", "忽视身体信号", "盲目做大决定", "生活节奏打乱", "精神过度内耗"];
+        let isShaking = false;
 
-        window.onload = function() {
-            updateSystemTimeAndAlmanac();
-            setInterval(updateSystemTimeAndAlmanac, 1000);
-        };
-
-        function updateSystemTimeAndAlmanac() {
+        // --- 基于“纯粹时间与自然时序”的物理闭合拦截 ---
+        function getAvailablePool() {
             const now = new Date();
-            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-            const dayOfWeek = now.getDay();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            
-            document.getElementById('footerTime').innerText = `当前系统时间：${days[dayOfWeek]} ${hours}:${minutes}:${seconds}`;
+            const day = now.getDay(); 
+            const hour = now.getHours();
 
-            const btn = document.getElementById('btnDraw');
-            if (dayOfWeek === 0) {
-                btn.disabled = true;
-                btn.innerText = "今日休息";
-                renderStaticAlmanac(["安心躺平", "彻底放松", "睡到自然醒"], ["生活急躁", "情绪紧绷", "过度内耗"]);
-            } else {
-                btn.disabled = false;
-                btn.innerText = "虔诚摇签";
-                
-                // 确保精选的核心无标签词条必然出现在最前面，绝不限制任何特定人群
-                let dailyYi = ["舒缓拉伸", "发呆五分钟", "听喜欢的歌"];
-                let dailyJi = ["步伐太急躁", "情绪紧紧绷绷", "过度焦虑未来"];
-                
-                // 再随机各填充2个补充
-                while(dailyYi.length < 5) {
-                    let r = yiItems[Math.floor(Math.random() * yiItems.length)];
-                    if(!dailyYi.includes(r)) dailyYi.push(r);
-                }
-                while(dailyJi.length < 5) {
-                    let r = jiItems[Math.floor(Math.random() * jiItems.length)];
-                    if(!dailyJi.includes(r)) dailyJi.push(r);
-                }
-                renderStaticAlmanac(dailyYi, dailyJi);
+            // 1. 周日天道静止
+            if (day === 0) {
+                return { error: true, title: "【天地闭合 · 乾坤休歇】", msg: "规序提示：时轮运转至周日，此阶段为签筒闭合期。今日无方向指示，世界处于无为运转状态。" };
             }
-        }
 
-        function renderStaticAlmanac(yiArr, jiArr) {
-            document.getElementById('almanacYiList').innerHTML = yiArr.map(i => `<div class="almanac-item">${i}</div>`).join('');
-            document.getElementById('almanacJiList').innerHTML = jiArr.map(i => `<div class="almanac-item">${i}</div>`).join('');
-        }
-
-        function spawnFloatingText() {
-            const now = new Date();
-            const dayOfWeek = now.getDay();
-            const wordBank = weekdayFloatTexts[dayOfWeek] || ["福运+", "顺遂+", "开心+"];
-            
-            const container = document.querySelector('.container');
-            for (let i = 0; i < 6; i++) {
-                setTimeout(() => {
-                    const textNode = document.createElement('div');
-                    textNode.className = 'floating-text';
-                    textNode.innerText = wordBank[Math.floor(Math.random() * wordBank.length)];
-                    
-                    const randomX = Math.random() * 260 + 40;
-                    const randomY = Math.random() * 120 + 80;
-                    
-                    textNode.style.left = `${randomX}px`;
-                    textNode.style.top = `${randomY}px`;
-                    textNode.style.animation = 'textFloatUp 0.9s ease-out forwards';
-                    
-                    container.appendChild(textNode);
-                    setTimeout(() => textNode.remove(), 900);
-                }, i * 150);
+            // 2. 深夜物理闭合（凌晨 00:00 - 05:59）
+            if (hour >= 0 && hour < 6) {
+                return { error: true, title: "【子夜归藏 · 灵台藏光】", msg: "规序提示：时轮运转至子夜与晨曦交界。此时空段签筒不作输出，请等待光线回归地表。" };
             }
+            
+            let list = [];
+            for (let key in poolData) {
+                if (key === "Lidl" && (day < 3 || day > 6)) continue;
+                if ((key === "瓜果market" || key === "瓜果市场") && hour >= 14) continue;
+                list.push(key);
+            }
+
+            return { error: false, list: list };
         }
 
-        let isDrawing = false;
-        function startDivination() {
-            if (isDrawing) return;
+        function startLottery() {
+            if (isShaking) return;
 
-            const now = new Date();
-            const dayOfWeek = now.getDay();
-            const currentHour = now.getHours();
-
-            if (dayOfWeek === 0) {
-                document.getElementById('resultTitle').innerText = "今日不宜抽签";
-                document.getElementById('resultCompliment').innerText = sundayCompliment;
-                document.getElementById('resultTag').style.display = "none";
+            const res = getAvailablePool();
+            if (res.error) {
+                document.getElementById('resLocation').innerText = res.title;
+                document.getElementById('resPoem').innerText = "静若止水，动若脱兔。";
+                document.getElementById('resAnalysis').innerText = res.msg;
+                document.getElementById('resultMask').classList.add('show');
                 return;
             }
 
-            isDrawing = true;
-            document.getElementById('btnDraw').disabled = true;
-
-            document.getElementById('luckyStick').style.display = "none";
-            document.getElementById('luckyStick').classList.remove('anim-flyout');
-            document.getElementById('resultTag').style.display = "none";
-            document.getElementById('resultTitle').innerText = "正在窥弄天机...";
-            document.getElementById('resultCompliment').innerText = "虔诚祈愿，签筒摇晃中。正在根据此时此刻的时间流转，为你过滤命定之中的生活去向...";
-
-            document.getElementById('cylinderWrapper').classList.add('anim-shake');
-            document.getElementById('stickPool').classList.add('anim-bumpy');
-
-            spawnFloatingText();
+            isShaking = true;
+            const wrapper = document.getElementById('cylinderWrapper');
+            const luckyStick = document.getElementById('luckyStick');
+            
+            wrapper.classList.add('shaking');
 
             setTimeout(() => {
-                document.getElementById('cylinderWrapper').classList.remove('anim-shake');
-                document.getElementById('stickPool').classList.remove('anim-bumpy');
-
-                let availableLocations = [];
-                const baseItems = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超"];
-                availableLocations.push(...baseItems);
-
-                if (dayOfWeek >= 3 && dayOfWeek <= 6) {
-                    availableLocations.push("Lidl");
-                }
-
-                if (currentHour < 14) {
-                    availableLocations.push("瓜果市场");
-                }
-
-                const finalChoice = availableLocations[Math.floor(Math.random() * availableLocations.length)];
-                
-                let shortName = finalChoice;
-                if(shortName === "二楼中超") shortName = "鞋包服饰";
-                if(shortName === "请假休息") shortName = "休整";
-                if(shortName === "宿舍躺平") shortName = "躺平";
-                if(shortName === "瓜果市场") shortName = "瓜果";
-                document.getElementById('luckyStickText').innerText = shortName;
-
-                const luckyStick = document.getElementById('luckyStick');
-                luckyStick.style.display = "block";
-                luckyStick.classList.add('anim-flyout');
-
-                const complimentsList = pools[finalChoice];
-                const selectedCompliment = complimentsList[Math.floor(Math.random() * complimentsList.length)];
+                wrapper.classList.remove('shaking');
+                luckyStick.classList.add('stick-anim');
 
                 setTimeout(() => {
-                    document.getElementById('resultTag').innerText = "上上大吉签";
-                    document.getElementById('resultTag').style.display = "inline-block";
-                    document.getElementById('resultTitle').innerText = `【今日去向：${finalChoice}】`;
-                    document.getElementById('resultCompliment').innerText = selectedCompliment;
-
-                    document.getElementById('btnDraw').disabled = false;
-                    isDrawing = false;
-                }, 400);
+                    showResult(res.list);
+                }, 800);
 
             }, 1200);
+        }
+
+        function showResult(validList) {
+            const now = new Date();
+            const day = now.getDay();
+            
+            let finalLocation = "";
+            let finalPoem = "";
+            let finalAnalysis = "";
+
+            if (day === 5 && Math.random() < 0.10) {
+                document.body.classList.add('gold-theme');
+                document.getElementById('title-text').innerText = "✨ 灵瑞金光筒 ✨";
+                
+                finalLocation = goldEgg.location;
+                finalPoem = goldEgg.poem;
+                finalAnalysis = goldEgg.analysis;
+            } else {
+                const randomLocation = validList[Math.floor(Math.random() * validList.length)];
+                const poems = poolData[randomLocation];
+                const randomPoemObj = poems[Math.floor(Math.random() * poems.length)];
+
+                finalLocation = `位置：${randomLocation}`;
+                finalPoem = `「 ${randomPoemObj.poem} 」`;
+                finalAnalysis = randomPoemObj.text;
+            }
+
+            document.getElementById('resLocation').innerText = finalLocation;
+            document.getElementById('resPoem').innerText = finalPoem;
+            document.getElementById('resAnalysis').innerText = finalAnalysis;
+            
+            document.getElementById('resultMask').classList.add('show');
+        }
+
+        function closeResult() {
+            document.getElementById('resultMask').classList.remove('show');
+            const luckyStick = document.getElementById('luckyStick');
+            luckyStick.classList.remove('stick-anim');
+            
+            setTimeout(() => {
+                isShaking = false;
+            }, 400);
+        }
+
+        document.getElementById('cylinderWrapper').addEventListener('click', startLottery);
+
+        // 原生手机摇一摇支持
+        let lastX = 0, lastY = 0, lastZ = 0;
+        let lastUpdate = 0;
+        const SHAKE_THRESHOLD = 800;
+
+        function deviceMotionHandler(eventData) {
+            let acceleration = eventData.accelerationIncludingGravity;
+            let curTime = new Date().getTime();
+            
+            if ((curTime - lastUpdate) > 100) {
+                let diffTime = curTime - lastUpdate;
+                lastUpdate = curTime;
+                
+                let speed = Math.abs(acceleration.x + acceleration.y + acceleration.z - lastX - lastY - lastZ) / diffTime * 10000;
+                if (speed > SHAKE_THRESHOLD) {
+                    startLottery();
+                }
+                lastX = acceleration.x;
+                lastY = acceleration.y;
+                lastZ = acceleration.z;
+            }
+        }
+
+        if (window.DeviceMotionEvent) {
+            window.addEventListener('devicemotion', deviceMotionHandler, false);
         }
     </script>
 </body>
