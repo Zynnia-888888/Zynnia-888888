@@ -2,536 +2,677 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>灵瑞问签筒</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>时来运转</title>
     <style>
-        /* --- 高阶 UI 视觉设计 --- */
-        :root {
-            --bg-gradient: linear-gradient(135deg, #1a1c20 0%, #2a2e35 100%);
-            --cylinder-color: linear-gradient(180deg, #a67c52 0%, #7d522a 50%, #543111 100%);
-            --paper-bg: radial-gradient(circle, #fcf8f2 0%, #f4ebd9 100%);
-            --accent-gold: #dfb76c;
-            --text-dark: #3a352a;
-        }
-
-        /* 隐藏彩蛋金色皮肤 */
-        .gold-theme {
-            --bg-gradient: linear-gradient(135deg, #4a3718 0%, #1f1607 100%);
-            --cylinder-color: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #7851a9 100%);
-            --accent-gold: #fff3cc;
-            text-shadow: 0 0 8px rgba(255,215,0,0.5);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        /* 全局大背景：作为手机外壳的承托环境 */
         body {
-            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
-            background: var(--bg-gradient);
-            height: 100vh;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            background-color: #ede2d1;
+            background-image: 
+                linear-gradient(rgba(215, 201, 180, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(215, 201, 180, 0.5) 1px, transparent 1px);
+            background-size: 30px 30px; 
+            color: #2b1f1d;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            min-height: 100vh; 
+            overflow: hidden; /* 阻止外层视口产生双滚动条 */
+            transition: background-color 0.5s ease;
+        }
+
+        /* 核心：固化的手机端独立圆弧视觉框 */
+        .phone-viewport {
+            width: 100%;
+            max-width: 412px; /* 经典手机端标准视觉宽度 */
+            height: 94vh;
+            max-height: 860px;
+            background-color: #f7eedf;
+            background-image: 
+                linear-gradient(rgba(224, 211, 192, 0.4) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(224, 211, 192, 0.4) 1px, transparent 1px);
+            background-size: 20px 20px;
+            
+            /* 完美的手机卡片倒角与硬核边缘切裁 */
+            border-radius: 36px;
+            border: 6px solid #2b1f1d; 
+            box-shadow: 0 20px 50px rgba(43, 31, 29, 0.25), 12px 12px 0px #cfbda3;
+            
+            position: relative;
+            overflow: hidden; /* 核心：确保所有动效粒子、签条不溢出圆弧框 */
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            overflow: hidden;
-            color: #fff;
-            padding: 20px;
-            transition: background 1s ease;
+            transition: all 0.5s ease;
+        }
+        
+        /* 金色隐藏皮肤下的全景视口变换 */
+        body.golden-easter-egg {
+            background-color: #f3e6be;
+        }
+        .golden-easter-egg .phone-viewport {
+            background-color: #fcf4db;
+            background-image: 
+                linear-gradient(rgba(235, 195, 115, 0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(235, 195, 115, 0.3) 1px, transparent 1px);
+            border-color: #8c6200;
+            box-shadow: 0 20px 50px rgba(140, 98, 0, 0.2), 12px 12px 0px #e0ca9b;
         }
 
-        /* 国风云纹背景装饰 */
-        .bg-deco {
-            position: absolute;
-            top: 5%;
-            width: 90%;
-            height: 90%;
-            border: 1px solid rgba(223, 183, 108, 0.15);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* 顶部提示 */
-        .header-hint {
-            z-index: 2;
-            text-align: center;
-            margin-top: 15px;
-        }
-        .header-hint h1 {
-            font-size: 24px;
-            letter-spacing: 4px;
-            color: var(--accent-gold);
-            margin-bottom: 8px;
-            font-weight: 400;
-        }
-        .header-hint p {
-            font-size: 13px;
-            opacity: 0.7;
-            letter-spacing: 1px;
-        }
-
-        /* 中轴线动画核心容器 */
-        .stage {
-            position: relative;
-            width: 100%;
+        /* 视口内部的平滑滚动容器 */
+        .scroll-container {
             flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-
-        /* 确保签筒彻底居中对齐 */
-        .cylinder-wrapper {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: 150px;
-            height: 260px;
-            cursor: pointer;
-        }
-
-        /* 签筒立体美化 */
-        .cylinder {
+            overflow-y: auto;
+            padding: 35px 20px 30px;
             width: 100%;
             height: 100%;
-            background: var(--cylinder-color);
-            border-radius: 12px 12px 24px 24px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 2px 5px rgba(255,255,255,0.2);
-            border: 2px solid var(--accent-gold);
-            position: relative;
-            display: flex;
-            justify-content: center;
+            /* 隐藏滚动条但保留功能 */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scroll-container::-webkit-scrollbar {
+            display: none;
         }
 
-        /* 签筒顶部阴影深邃感 */
-        .cylinder::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 16px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 10px 10px 0 0;
-        }
-
-        /* 签筒内部的竹签们 */
-        .sticks {
-            position: absolute;
-            bottom: 40px;
-            width: 80px;
-            height: 180px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            transition: transform 0.1s ease;
-        }
-
-        .stick {
-            width: 6px;
-            height: 160px;
-            background: #d0a374;
-            border-radius: 3px 3px 0 0;
-            margin: 0 -1px;
-            border: 1px solid #9c6d43;
-            transform-origin: bottom center;
-        }
-        .stick:nth-child(odd) { height: 170px; background: #c29566; }
-        .stick:nth-child(3n) { transform: rotate(4deg); }
-        .stick:nth-child(3n+1) { transform: rotate(-4deg); }
-        .stick:nth-child(5n) { transform: rotate(2deg); }
-
-        /* --- 正中轴线摇晃动画 --- */
-        @keyframes shakeAxis {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            15% { transform: translate(-50%, -53%) rotate(8deg); }
-            30% { transform: translate(-50%, -47%) rotate(-8deg); }
-            45% { transform: translate(-50%, -52%) rotate(6deg); }
-            60% { transform: translate(-50%, -48%) rotate(-6deg); }
-            75% { transform: translate(-50%, -51%) rotate(3deg); }
-            90% { transform: translate(-50%, -49%) rotate(-3deg); }
-            100% { transform: translate(-50%, -50%) rotate(0deg); }
-        }
-
-        .shaking {
-            animation: shakeAxis 0.5s ease-in-out infinite;
-        }
-
-        /* 跃出的单根竹签 */
-        .lucky-stick {
-            position: absolute;
-            width: 12px;
-            height: 190px;
-            background: #be2323;
-            border: 1px solid var(--accent-gold);
-            border-radius: 4px;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(50px);
-            opacity: 0;
-            z-index: 3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
-        .lucky-stick span {
-            color: #fff;
-            font-size: 10px;
-            writing-mode: vertical-rl;
-            letter-spacing: 2px;
-            font-weight: bold;
-        }
-
-        @keyframes stickOut {
-            0% { transform: translateX(-50%) translateY(50px); opacity: 0; }
-            50% { transform: translateX(-50%) translateY(-60px) rotate(5deg); opacity: 1; }
-            100% { transform: translateX(-50%) translateY(10px); opacity: 0; }
-        }
-        .stick-anim {
-            animation: stickOut 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        /* --- 手机端现代国风圆弧倒角视觉框 --- */
-        .result-mask {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
+        /* 内部核心纸卡片 */
+        .container {
+            width: 100%; 
+            background: #fffdf9;
+            padding: 25px 16px 20px; 
+            border-radius: 24px;
+            border: 4px solid #2b1f1d; 
+            box-shadow: 5px 5px 0px #cfbda3;
+            text-align: center; 
+            position: relative; 
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.4s ease;
-            padding: 24px;
+            transition: all 0.5s ease;
         }
-        .result-mask.show {
-            opacity: 1;
-            pointer-events: auto;
+        
+        .phone-viewport.golden-mode .container {
+            border-color: #8c6200;
+            background: #fffdf2;
+            box-shadow: 5px 5px 0px #e0ca9b;
         }
 
-        /* 重点优化：大圆弧倒角柔边视觉框 */
-        .result-card {
-            background: var(--paper-bg);
-            border: 1px solid rgba(138, 109, 59, 0.3);
-            border-radius: 24px; /* 契合手机端高阶全面屏的圆弧倒角 */
-            width: 100%;
-            max-width: 330px;
-            padding: 32px 24px;
-            color: var(--text-dark);
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(223, 183, 108, 0.2);
-            position: relative;
-            transform: scale(0.85);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        h1 { font-size: 26px; color: #cc4c33; letter-spacing: 2px; font-weight: 900; margin-bottom: 6px; transition: color 0.5s; }
+        .phone-viewport.golden-mode h1 { color: #b8860b; }
+        .subtitle { font-size: 13px; color: #7b6865; margin-bottom: 30px; font-weight: 500; }
+        
+        /* 摇签区域 - 严格中轴线对称设计 */
+        .cylinder-wrapper {
+            height: 270px; position: relative; margin-bottom: 25px;
+            display: flex; justify-content: center; align-items: flex-end;
         }
-        .result-mask.show .result-card {
-            transform: scale(1);
+        /* 绝对居中对齐 */
+        .stick-container {
+            position: absolute; bottom: 110px; width: 140px; height: 130px;
+            display: flex; justify-content: center; align-items: flex-end;
+            left: 50%; transform: translateX(-50%);
+        }
+        .stick {
+            width: 35px; height: 110px; background-color: #f5cf82; border: 3px solid #2b1f1d;
+            border-radius: 8px 8px 0 0; margin: 0 -8px; transform-origin: bottom center;
+            position: relative; box-shadow: -1px 0 0px #2b1f1d;
+            transition: all 0.5s;
+        }
+        .phone-viewport.golden-mode .stick {
+            border-color: #8c6200;
+            background-color: #f7dfa6;
+        }
+        .stick::before {
+            content: ''; position: absolute; top: 8px; left: 50%;
+            transform: translateX(-50%); width: 6px; height: 6px;
+            background-color: #2b1f1d; border-radius: 50%;
+        }
+        .phone-viewport.golden-mode .stick::before { background-color: #8c6200; }
+        
+        /* 严格中轴线对称旋转偏角 */
+        .stick:nth-child(1) { transform: rotate(-14deg) translateY(4px); background-color: #e8bd68; }
+        .stick:nth-child(2) { transform: rotate(-7deg) translateY(-2px); background-color: #f7d692; }
+        .stick:nth-child(3) { transform: rotate(0deg) translateY(2px); background-color: #eed08a; z-index: 6; }
+        .stick:nth-child(4) { transform: rotate(7deg) translateY(-2px); background-color: #f5cf82; }
+        .stick:nth-child(5) { transform: rotate(14deg) translateY(4px); background-color: #e5b85c; }
+
+        .cylinder {
+            width: 150px; height: 140px; background-color: #e85d44; border: 4px solid #2b1f1d;
+            border-radius: 16px 16px 28px 28px; position: relative; z-index: 12;
+            box-shadow: 5px 5px 0px #2b1f1d; display: flex; justify-content: center; align-items: center;
+            transition: all 0.5s; margin: 0 auto;
+        }
+        .phone-viewport.golden-mode .cylinder {
+            background-color: #d4af37;
+            border-color: #8c6200;
+            box-shadow: 5px 5px 0px #8c6200;
+        }
+        .cylinder::after {
+            content: '万事皆宜'; position: absolute; padding: 8px 4px;
+            background-color: #ffca3a; border: 3px solid #2b1f1d; border-radius: 6px;
+            color: #2b1f1d; font-weight: 900; font-size: 15px;
+            writing-mode: vertical-rl; text-orientation: upright;
+            letter-spacing: 2px; box-shadow: 3px 3px 0 #2b1f1d;
+            transition: all 0.5s;
+        }
+        .phone-viewport.golden-mode .cylinder::after {
+            content: '提包跑路';
+            background-color: #fff;
+            border-color: #8c6200;
+            color: #8c6200;
+            box-shadow: 3px 3px 0 #8c6200;
         }
 
-        /* 内部圆弧勾边，形成双层层次感 */
-        .result-card::after {
-            content: '';
+        /* 出签动画中轴线定位修正 */
+        .lucky-stick-out {
+            position: absolute; width: 45px; height: 150px; background-color: #118ab2;
+            border: 4px solid #2b1f1d; bottom: 110px; z-index: 5;
+            border-radius: 12px 12px 6px 6px; display: none;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.15); transform-origin: bottom center;
+            left: 50%; margin-left: -22.5px; /* 宽度45px的一半，实现完美中轴居中飞出 */
+        }
+        .lucky-stick-out::before {
+            content: ''; position: absolute; top: 12px; left: 50%;
+            transform: translateX(-50%); width: 8px; height: 8px;
+            background-color: #2b1f1d; border-radius: 50%;
+        }
+        .lucky-stick-text {
+            writing-mode: vertical-rl; text-orientation: upright; font-size: 13px;
+            color: #fff; font-weight: 900; margin: 32px auto 0 auto; letter-spacing: 4px;
+        }
+
+        /* 动画群 */
+        @keyframes handShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            20% { transform: translate(-8px, 4px) rotate(-10deg); }
+            40% { transform: translate(8px, -4px) rotate(10deg); }
+            60% { transform: translate(-6px, -2px) rotate(-8deg); }
+            80% { transform: translate(6px, 2px) rotate(8deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .shaking { animation: handShake 0.4s ease-in-out infinite; }
+
+        @keyframes stickBumpy {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-20px) rotate(-8deg); }
+            66% { transform: translateY(4px) rotate(10deg); }
+        }
+        .sticks-shaking .stick:nth-child(1) { animation: stickBumpy 0.35s ease-in-out infinite; }
+        .sticks-shaking .stick:nth-child(2) { animation: stickBumpy 0.35s ease-in-out infinite 0.07s; }
+        .sticks-shaking .stick:nth-child(3) { animation: stickBumpy 0.35s ease-in-out infinite 0.14s; }
+        .sticks-shaking .stick:nth-child(4) { animation: stickBumpy 0.35s ease-in-out infinite 0.21s; }
+        .sticks-shaking .stick:nth-child(5) { animation: stickBumpy 0.35s ease-in-out infinite 0.28s; }
+
+        @keyframes signFlyOut {
+            0% { bottom: 110px; opacity: 0; transform: scale(0.6) rotate(-15deg); }
+            60% { bottom: 230px; opacity: 1; transform: scale(1.1) rotate(5deg); }
+            100% { bottom: 190px; opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+        .fly-out-anim { display: block !important; animation: signFlyOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        /* 基于手机视觉框内部定位的飘字动画（采用 absolute 随视口剪裁） */
+        @keyframes textFloatUp {
+            0% { transform: translateY(0) scale(0.7); opacity: 0; }
+            15% { opacity: 1; transform: translateY(-30px) scale(1.2); }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(-220px) scale(0.95); opacity: 0; }
+        }
+        .floating-text {
             position: absolute;
-            top: 8px; left: 8px; right: 8px; bottom: 8px;
-            border: 1px dashed rgba(138, 109, 59, 0.25);
-            border-radius: 18px; /* 内部同步圆弧 */
+            color: #cc4c33; font-weight: 900; font-size: 17px;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #2b1f1d;
             pointer-events: none;
+            z-index: 999;
+            animation: textFloatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+            display: flex; align-items: center; gap: 4px;
+            white-space: nowrap;
+        }
+        .gold-style {
+            color: #ffa200 !important;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #b25900 !important;
+        }
+        .luck-style {
+            color: #ff3333 !important;
+            text-shadow: 2px 2px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 3px 3px 0px #5c0000 !important;
         }
 
-        .result-location {
-            font-size: 22px;
-            font-weight: 600;
-            color: #be2323;
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-            border-bottom: 1px dashed rgba(138, 109, 59, 0.3);
-            padding-bottom: 12px;
+        .btn-draw {
+            background-color: #ff6b6b; color: #fff; border: 4px solid #2b1f1d;
+            padding: 13px 40px; font-size: 18px; font-weight: 900; border-radius: 20px;
+            cursor: pointer; box-shadow: 4px 4px 0px #2b1f1d; letter-spacing: 2px;
+            transition: all 0.2s; width: 100%;
         }
+        .btn-draw:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0px #2b1f1d; }
+        .btn-draw:disabled { background-color: #cbd5e1; color: #94a3b8; box-shadow: none; transform: none; border-color: #94a3b8; }
 
-        .result-poem {
-            font-size: 16px;
-            line-height: 1.8;
-            letter-spacing: 1px;
-            font-weight: 500;
-            margin-bottom: 22px;
-            color: #2b2b2b;
+        .result-box {
+            margin-top: 25px; min-height: 140px; padding: 20px 16px; border-radius: 20px;
+            background-color: #fdfcf7; border: 3px solid #2b1f1d; box-shadow: 4px 4px 0px #eedcc5;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;
         }
-
-        .result-analysis {
-            font-size: 14px;
-            line-height: 1.6;
-            color: #4a4a4a;
-            background: rgba(138, 109, 59, 0.06);
-            padding: 16px;
-            border-radius: 14px; /* 内部板块圆弧倒角 */
-            margin-bottom: 24px;
-            text-align: left;
-            letter-spacing: 0.5px;
-        }
-
-        .close-btn {
-            background: #be2323;
-            color: #fff;
-            border: none;
-            padding: 12px 36px;
-            font-size: 14px;
-            letter-spacing: 2px;
-            border-radius: 50px; /* 胶囊圆弧形按钮，完美适配现代UI */
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(190,35,35,0.3);
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-        .close-btn:active {
-            background: #9a1c1c;
-        }
-
-        /* 底部说明 */
-        .footer-info {
-            z-index: 2;
-            font-size: 12px;
-            opacity: 0.4;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
+        .result-title { font-size: 13px; font-weight: 700; color: #7b6865; margin-bottom: 8px; }
+        .result-value { font-size: 25px; font-weight: 900; color: #cc4c33; margin-bottom: 4px; }
+        .result-tag { font-size: 11px; background: #cc4c33; color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: bold; margin-bottom: 12px; display: none; letter-spacing: 1px; }
+        .result-compliment { font-size: 13px; color: #4a3532; font-weight: 700; line-height: 1.6; background-color: #fff5e6; padding: 10px 12px; border-radius: 12px; border: 2px dashed #2b1f1d; max-width: 98%; text-align: left; }
+        
+        .result-mission { font-size: 12px; color: #118ab2; font-weight: 700; margin-top: 10px; border-top: 1px dotted #cbd5e1; padding-top: 8px; width: 95%; text-align: left; display: none; }
+        .result-midnight { font-size: 11px; color: #7b6865; font-weight: 500; margin-top: 8px; font-style: italic; display: none; line-height: 1.4; }
+        .hint-text { font-size: 11px; color: #a3908c; margin-top: 15px; font-weight: 500; line-height: 1.5; text-align: center; }
+        .almanac-text { font-size: 11px; color: #cc4c33; margin-top: 4px; font-weight: 700; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="bg-deco"></div>
+<div class="phone-viewport" id="viewportCard">
+    <div class="scroll-container">
+        
+        <div class="container" id="mainContainer">
+            <h1>灵瑞问签筒</h1>
+            <div class="subtitle">—— 摇晃木筒 · 戳穿今日纠结 ——</div>
 
-    <div class="header-hint">
-        <h1 id="title-text">灵瑞问签筒</h1>
-        <p id="flow-hint">凝神静气，摇晃签筒或轻触问卜</p>
-    </div>
-
-    <div class="stage">
-        <div class="cylinder-wrapper" id="cylinderWrapper">
-            <div class="cylinder">
-                <div class="sticks">
-                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
-                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
-                    <div class="stick"></div><div class="stick"></div><div class="stick"></div>
+            <div class="cylinder-wrapper" id="wrapper">
+                <div class="stick-container" id="stickContainer">
+                    <div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div>
                 </div>
+                <div class="lucky-stick-out" id="luckyStick"><div class="lucky-stick-text" id="luckyStickText">今日宜行</div></div>
+                <div class="cylinder" id="cylinderBox"></div>
             </div>
-            <div class="lucky-stick" id="luckyStick">
-                <span>灵签既出</span>
+
+            <button class="btn-draw" id="drawBtn" onclick="startDraw()">大力摇晃</button>
+
+            <div class="result-box">
+                <div id="resultTitle" class="result-title">心诚则灵，答案自现</div>
+                <div id="resultValue" class="result-value">✏️</div>
+                <div id="resultTag" class="result-tag"></div>
+                <div id="resultCompliment" class="result-compliment" style="display:none;"></div>
+                <div id="resultMission" class="result-mission"></div>
+                <div id="resultMidnight" class="result-midnight"></div>
             </div>
+
+            <div class="hint-text" id="timeHint"></div>
+            <div class="almanac-text" id="almanacHint"></div>
         </div>
+
     </div>
+</div>
 
-    <div class="footer-info">天地时序 · 随心问卜</div>
+<script>
+    const luckyIdioms = {
+        "请假休息": "休养生息", "随便转转": "闲庭信步", "公园散步": "踏青纳福", "巡视果园": "春华秋实",
+        "宿舍躺平": "养精蓄锐", "IDEA": "妙笔生花", "老Maxi": "驾轻就熟", "新Maxi": "探奇拓新",
+        "Lilly": "赏心悦目", "DM": "洗心革面", "瓜果市场": "硕果累累", "明珠": "璀璨夺目",
+        "银行取钱": "财源广进", "二楼中超": "丰衣足食", "Lidl": "满载而归", "周五跑路大满贯": "溜之大吉"
+    };
 
-    <div class="result-mask" id="resultMask">
-        <div class="result-card">
-            <div class="result-location" id="resLocation">-</div>
-            <div class="result-poem" id="resPoem">-</div>
-            <div class="result-analysis" id="resAnalysis">-</div>
-            <button class="close-btn" onclick="closeResult()">承领此签</button>
-        </div>
-    </div>
+    const signTags = {
+        "请假休息": "【奉天承运·超级大吉签】", "宿舍躺平": "【御赐免死·极致松弛签】", "随便转转": "【有缘相见·随缘锦鲤签】",
+        "公园散步": "【吸收天地灵气·上上签】", "巡视果园": "【硕果累累·元气满满签】", "IDEA": "【活力四射·多巴胺上等签】",
+        "老Maxi": "【稳如泰山·闭眼买好运签】", "新Maxi": "【开拓疆土·惊喜盲盒签】", "Lilly": "【审美爆发·优雅贵气签】",
+        "DM": "【精致生活·自律之神签】", "瓜果市场": "【人间烟火·朝气蓬勃签】", "明珠": "【家乡温暖·万事如意签】",
+        "银行取钱": "【财神显灵·吸金暴富签】", "二楼中超": "【饕餮盛宴·大饱口福签】", "Lidl": "【通关得胜·满载而归签】",
+        "周五跑路大满贯": "【奉天承运·周五特赦全免金牌】"
+    };
 
-    <script>
-        // --- 完全中立、零状态假设、纯地理与自然描摹的文案池 ---
-        const poolData = {
-            "请假休息": [
-                { poem: "久在樊笼里，复得返自然。", text: "空间指示：此去宜归向自处之境，闭门谢客，或于静止中观察周遭物理变化。" },
-                { poem: "身在此山中，云深不知处。", text: "空间指示：当前利于切断向外传导的射线，处于隐匿、留白与不可见的状态中。" }
-            ],
-            "Lidl": [
-                { poem: "满筐圆实骊珠滑，入口甘香冰玉寒。", text: "空间指示：地缘向西或西南，属于货殖流通、物资聚合之所，利于观察生活物资的罗列。" },
-                { poem: "日中集市乾坤大，物华天宝各西东。", text: "空间指示：前往多流线、多标价的现世流转地，可在规律的货架动线中完成一次空间穿梭。" }
-            ],
-            "随便转转": [
-                { poem: "步履无心随处好，风光不墨画图新。", text: "空间指示：不设定经纬度与目的地。随外部地势起伏而移动，随机截取下一刻撞见的环境断面。" },
-                { poem: "流水下山非有意，片云归洞本无心。", text: "空间指示：当前处于无阻尼的状态。不设动线规划，视线落在何处，脚步即向何处衍生。" }
-            ],
-            "公园散步": [
-                { poem: "林深时见鹿，溪午不闻钟。", text: "空间指示：走向含有林木、泥土与开阔空间的绿色生态场。在这里，声音的传播频率将因植物的吸附而发生改变。" },
-                { poem: "清风拂面不胜轻，独步草青意自平。", text: "空间指示：户外开阔环境。头顶无人工建筑遮挡，视野地平线无限延伸，适合物理空间上的匀速位移。" }
-            ],
-            "巡视果园": [
-                { poem: "枝头累累皆因果，静待时时造化功。", text: "空间指示：前往含有生命孕育周期、植物正在挂果或处于成熟期的观测点，见证时间在客观物质上的留痕。" },
-                { poem: "满园葱郁皆生意，静看造物运乾坤。", text: "空间指示：此方空间具有强烈的向下扎根属性。适合观察叶绿素与水分在土壤环境中的静态表达。" }
-            ],
-            "宿舍躺平": [
-                { poem: "一榻清风天地阔，半窗明月心神闲。", text: "空间指示：处于私密且具有边界的固定方寸内。躯体保持水平重力分布，视线与天花板平行。" },
-                { poem: "虚室生白吉祥地，闭门即是深山中。", text: "空间指示：拉起物理阻隔（窗帘/门锁），在独立构筑的立方体空间内，切断一切外部声光干扰。" }
-            ],
-            "IDEA": [
-                { poem: "灵台无物常通达，智刃闪烁断纷纭。", text: "空间指示：利于开展逻辑推演、秩序重组或对复杂代码、信息的深度解析，处于极高密度的脑部交互状态。" },
-                { poem: "千淘万漉虽辛苦，吹尽狂沙始到金。", text: "空间指示：当前的场景适合面对那些繁复、细碎、高结构化的任务，通过纠错与修正完成逻辑闭环。" }
-            ],
-            "老Maxi": [
-                { poem: "古朴货架藏旧岁，人间烟火最抚心。", text: "空间指示：前往一处具备时间累积感、货品结构极其稳定的传统大型物理空间，动线熟悉，少有未知干扰。" },
-                { poem: "旧地重游意自如，所需皆在方寸间。", text: "空间指示：高确定性的熟稔场所。不需要应对任何突发的新视觉刺激，按部就班即可获取所需物质。" }
-            ],
-            "新Maxi": [
-                { poem: "琳琅满目开新境，气象万千驻心头。", text: "空间指示：现代、高挑高、强采光的大型复合商业空间。流线设计充满现代工业律动，视觉明快。" },
-                { poem: "宏阔空间宽视野，推陈出新运转换。", text: "空间指示：处于宽敞、宽步道、光影折射率高的空间。物理视野的骤然开阔，利于转换长期处于逼仄环境的视线。" }
-            ],
-            "Lilly": [
-                { poem: "暗香浮动因风起，明镜妆台照素华。", text: "空间指示：前往注重身体微观感知、气味分子浓度高、或者提供个表修饰物资的局部精致空间。" },
-                { poem: "精致生活无别法，细微深处见真淳。", text: "空间指示：把注意力回收至个体的表皮层与细微气味上。此去所涉环境，色彩通常呈现出轻快、柔和的调性。" }
-            ],
-            "DM": [
-                { poem: "万物条理皆井然，随心取用最相宜。", text: "空间指示：强实用主义、高分类精细度的现代生活补给站。其陈列规律极度严谨，极易寻找对应物。" },
-                { poem: "草本清香安神魄，日常点滴润身心。", text: "空间指示：充斥着植物提取液、日常护理试剂的标准化零售场所，可在微量元素的排列组合中游走。" }
-            ],
-            "瓜果市场": [
-                { poem: "红杏碧桃依绿水，新丝青蔓绕荒畦。", text: "空间指示：大自然高含水量、高色彩饱和度产物的集散中心。在这里可以直观触碰到高频的生命新陈代谢痕迹。" },
-                { poem: "五色斑斓皆生意，饱满多汁运亨通。", text: "空间指示：空气中带有果酸与植物纤维的天然混合气味，适合在此空间内调动最基础的色泽与嗅觉感知。" }
-            ],
-            "明珠": [
-                { poem: "沧海月明珠有泪，蓝田日暖玉生烟。", text: "空间指示：带有特定东方饮食文化或传统地缘风味符号的磁场空间，适合寻觅具有血脉熟悉度的特定物质。" },
-                { poem: "风味不改初心在，珍重人间聚散时。", text: "空间指示：在特定的风味环境中，热量通过食物介质完成物理层面的转移，能使身体指标获得最直接的充盈。" }
-            ],
-            "二楼中超": [
-                { poem: "琼楼玉宇藏珍货，百味翻腾会心笑。", text: "空间指示：物理高度需要拾级而上。在这个需要垂直位移才能抵达的空间内，存留着大量熟悉的地缘特产。" },
-                { poem: "拾级而上风光异，此中滋味自心知。", text: "空间指示：转换高度，向垂直上方的空间探索。在带有浓厚熟悉包裹感的氛围里，完成一次物质的获取。" }
-            ]
-        };
+    const poolWords = [
+        { text: "功德 +1 🌟", type: "normal" },
+        { text: "纠结 -99 ⚡", type: "normal" },
+        { text: "咔哒咔哒...⚙️", type: "normal" },
+        { text: "时来运转 🔮", type: "normal" },
+        { text: "灵气聚拢 ✨", type: "normal" },
+        { text: "财富 +1 🪙", type: "gold" },
+        { text: "好运 +1 🧧", type: "luck" }
+    ];
 
-        // 金色隐藏彩蛋
-        const goldEgg = {
-            location: "【天道乾坤 · 万象皆空】",
-            poem: "天道清明，万缘放下；今日无羁，云淡风轻。",
-            analysis: "规序提示：触发十里挑一的【万象皆空】概率。在此时空维度下，不设规律，不受限制，无需符合任何空间或作息定义，万物皆在自由态，任你自流转。"
-        };
+    const fastShakeWords = [
+        { text: "慢点慢点，签筒要散架啦！🤯", type: "normal" },
+        { text: "好家伙，这泼天的手速！⚡", type: "normal" },
+        { text: "看出来了，你现在超纠结！🤣", type: "normal" },
+        { text: "财源广进 🪙", type: "gold" },
+        { text: "鸿运当头 🧧", type: "luck" }
+    ];
 
-        let isShaking = false;
+    const compliments = {
+        "请假休息": [
+            "✨ 节奏大师！懂得在合适的时候按下暂停键，这本身就是一种极其顶级的智慧与魄力！",
+            "🔮 今日运势显示：你的身心状态非常宝贵。顺应天意给自己放个假，今天注定状态回满！",
+            "🛌 敢于断舍离多余的疲惫！今天你的勇敢值拉满，请假是为了下一次更漂亮的华丽登场！"
+        ],
+        "随便转转": [
+            "🍃 盲盒般的浪漫！你漫不经心的脚步，踩中的全都是生活为你量身定做的宝藏惊喜！",
+            "✨ 拥有如此自由且洒脱的灵魂真的让人实名羡慕！不需要目的地，因为你就是风景本身！",
+            "🧭 漫无目的地闲晃，反而能避开生活设下的所有刻板KPI。今天世界是由你的心情来定义的！"
+        ],
+        "公园散步": [
+            "🌸 连风都在偷偷偏心你！今天走在绿荫阳光下，你的磁场和自然的生命力完美同频！",
+            "✨ 收集世界纯粹的美好！踏出的每一步都带着奇妙的韵律，今天又是被好运气包围的一天！",
+            "🍀 绿叶会为你洗去班味！去公园大口呼吸吧，今天大自然所有的负氧离子都在为你加油打气！"
+        ],
+        "巡视果园": [
+            "🍎 视野广阔，格局全开！这种亲近自然又充满趣味的规划，足以证明你对生活有着非凡的热情！",
+            "👑 走在生机勃勃的环境里，你的精神面貌简直满分！今日必然活力爆棚！",
+            "🌳 仿佛化身为巡视领地的尊贵庄园主！去大自然中验收快乐吧，满地生机都将化为你的财富磁场！"
+        ],
+        "宿舍躺平": [
+            "🛌 绝了！能把放松享受做到如此优雅和专注，床榻就是你的能量加油站，充能速度100%！",
+            "💤 屏蔽纷扰，静享舒适。这种专注自我、不被外界节奏打乱的定力，真的非常了不起！",
+            "🛡️ 宿舍的四面墙今天就是你最坚固的幸福防御盾！把疲惫隔绝在外，今日舒适度高调超标！"
+        ],
+        "IDEA": [
+            "💻 灵感爆发！思维的火花在疯狂闪烁，你今天的专注力和逻辑力简直强大到无可匹敌！",
+            "🚀 核心力量全开！一旦专注起来，任何难题在你面前都会迎刃而解，今天的效率直接拉满！",
+            "✨ 锐意进取，势不可挡！你现在身上散发的认真光芒，足以吸引全宇宙的正能量为你开路！"
+        ],
+        "老Maxi": [
+            "🛒 稳健又聪慧的选择！经典的地方总能带给人心安与扎实，今天你的挑选眼光一定绝好！",
+            "🔮 目标明确，步伐坚定。你在货架间做决断的利落姿态，展现了极强的自主生活掌控力！",
+            "🥖 经典的配方，熟悉的治愈感。在熟悉的环境里，你的运势走得极其平稳且舒适！"
+        ],
+        "新Maxi": [
+            "🛍️ 走在探索前沿的先锋！全新的环境和未知的惊喜正等待着你那充满好奇心的高贵灵魂！",
+            "✨ 永远乐于尝试、拥抱新事物，你的生活永远充满生命力，今天必定满载而归！",
+            "🌟 带着拓荒者的英姿高调探索！未曾见过的商品和货架，正在悄悄碰撞出你今天的全新好运！"
+        ],
+        "Lilly": [
+            "💅 审美天花板！懂得把生活细节经营得如此精致和有格调，你的品味真的高出平均线太多！",
+            "🌸 懂得把取悦自己放在第一位，你现在的状态简直美妙极了，今天就去尽情散发光芒吧！",
+            "💄 每一处细节都在闪闪发光！你对美的追求是如此无可剔除，今天你就是优雅生活的代言人！"
+        ],
+        "DM": [
+            "💖 用品味和智慧生活的人！能把日常个护都打理得井井有条，说明你是一个极其热爱并善待自己的人！",
+            "🌟 细致入微，井然有序。你对待生活的认真态度，值得生活回馈你一整天源源不断的小确幸！",
+            "🧴 极致自律带来的舒适安全感！打理好生活细节的你，磁场无比干净且充满正能量！"
+        ],
+        "瓜果市场": [
+            "🍉 朝气蓬勃，行动力爆表！在这个最接地气、最有生命力的地方，你整个人都散发着生活家的光芒！",
+            "✨ 追随阳光和新鲜度出发，这本身就是对生活热气腾腾的爱。今天注定会收获满满的甜蜜！",
+            "🍓 新鲜活力全开！满眼都是水灵翠绿与新鲜多汁，你热爱生活的雷达今天精准闪烁！"
+        ],
+        "明珠": [
+            "💎 熠熠生辉！抽中这个选项，意味着你今天的运势也如明珠般璀璨，任何纠结都会烟消云散！",
+            "🌟 气场高调且迷人！做选择时如此果断又具前瞻性，今天的你注定是不可忽视的焦点！",
+            "🔮 稳健独特！你总是知道什么最适合自己，带着这份无敌的自信，今天万事皆宜！"
+        ],
+        "银行取钱": [
+            "✨ 财富领航者！在这金融的航道上找准方向，每一步都迈向财富的星辰大海，注定一路繁花簇拥，暴富在望。",
+            "💰 今日财神指引：你与财富的磁场正高度契合，走进那扇财富汇聚之门，大财小财如百川归海，滚滚而来。",
+            "🪙 亮晶晶的财运正在疯狂向你招手！听到了吗？那是钱包正在快乐膨胀的绝妙声音！"
+        ],
+        "二楼中超": [
+            "🥢 顶级的美食鉴赏家！不仅拥有极高的生活格调，还拥有把平凡日子过成饕餮盛宴的超强能力！",
+            "🍲 治愈力直接拉满！你挑选食材时的那份认真与讲究，是在为自己和生活搭建最坚实的幸福防御网！",
+            "🍚 熟悉的饭香就是最强大的魔法！今天去挑选心仪的家乡风味，福气和胃口双双达到巅峰！"
+        ],
+        "Lidl": [
+            "🛒 坚韧与智慧的化身！能够顺利通关一周的各种考验来到这里，你的执行力和规划力已经登峰造极！",
+            "✨ 🏁 满载而归的绝对主力！你推着手推车做决断的飒爽英姿，充分展示了对高品质生活游刃有余的驾驭能力！",
+            "🎫 满格执行力通关成功！去推开属于你的胜利之门，今天的性价比之神将会一路保驾护航！"
+        ],
+        "周五跑路大满贯": [
+            "👑 降维打击！这是天赐的跑路神旨，既然触发了这 10% 的隐藏概率，今天就必须把所有烦恼统统全免甩到脑后！",
+            "🌟 金光闪闪的至尊特赦！你今天的运气已经击败了全宇宙 99% 的打工人，顺应这个特赦彩蛋，高调迎接完全属于你的狂欢！",
+            "🏁 满贯跑路，神仙撑腰！所有的焦虑、工作、纠结在这一刻被全部清空，带着你的特赦金牌，快乐出发！"
+        ]
+    };
 
-        // --- 基于“纯粹时间与自然时序”的物理闭合拦截 ---
-        function getAvailablePool() {
-            const now = new Date();
-            const day = now.getDay(); 
-            const hour = now.getHours();
+    const missionPool = [
+        "💡 今日秘密任务：出门或散步时，数出 3 个穿红色上衣的路人，并在心里默默祝他们今天发大财。相信我，你的财运也会跟着翻倍！",
+        "💡 今日秘密任务：去买东西或结账时，对收银员或者路过的人真诚微笑一下，用你的独特磁场去悄悄点亮别人的一天！",
+        "💡 今日秘密任务：在目的地买一样平时绝对不怎么买的零食或小玩意，当作今天生活送给你的盲盒礼物！",
+        "💡 今日秘密任务：一会出发时用左脚先迈出门。玄学表明，今天左脚出门能完美避开生活里的所有小磕碰！"
+    ];
 
-            // 1. 周日天道静止
-            if (day === 0) {
-                return { error: true, title: "【天地闭合 · 乾坤休歇】", msg: "规序提示：时轮运转至周日，此阶段为签筒闭合期。今日无方向指示，世界处于无为运转状态。" };
+    const almanacPool = [
+        ["🔮 宜：喝杯奶茶，看云发呆。忌：对账单叹气。", "✨ 宜：步伐嚣张，自信满满。忌：替别人瞎操心。"],
+        ["☀️ 宜：大吃一顿，取悦自己. 忌：疯狂内耗。", "🍃 宜：保持快乐，拒绝加班。忌：回复消息太快。"],
+        ["🛡️ 宜：理直气壮，绝不背锅。忌：自我CPU。", "🪙 宜：高调吸金，闭眼买单。忌：疯狂省钱。"],
+        ["🌸 宜：亲近自然，大口呼吸。忌：坐在椅子上生根。", "🚀 宜：火力全开，一气耗成。忌：磨磨唧唧拖延。"]
+    ];
+
+    let lastResult = "";
+    let repeatCount = 0;
+    let totalDrawsInShortTime = 0;
+    let clickTimeBuffer = [];
+    let sideToggle = true;
+
+    function updateTimeHint() {
+        const now = new Date();
+        const days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+        document.getElementById('timeHint').innerText = `当前系统时间：${days[now.getDay()]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        const poolIndex = now.getMinutes() % almanacPool.length;
+        const subIndex = now.getSeconds() % 2;
+        document.getElementById('almanacHint').innerText = almanacPool[poolIndex][subIndex];
+    }
+    
+    function getAvailablePool() {
+        const now = new Date();
+        const dayOfWeek = now.getDay(); 
+        const currentHour = now.getHours();
+
+        if (dayOfWeek === 0) return { status: "sunday_rest" };
+
+        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+            if (currentHour >= 9 && currentHour < 12) {
+                return { status: "ready", data: ["IDEA"], intercept: "💼 现正值晨间高效工作黄金期！不要摸鱼啦，祖师爷命令你用【IDEA】开启你无敌的逻辑风暴！" };
             }
-
-            // 2. 深夜物理闭合（凌晨 00:00 - 05:59）
-            if (hour >= 0 && hour < 6) {
-                return { error: true, title: "【子夜归藏 · 灵台藏光】", msg: "规序提示：时轮运转至子夜与晨曦交界。此时空段签筒不作输出，请等待光线回归地表。" };
+            if (currentHour >= 12 && currentHour < 14) {
+                return { status: "ready", data: ["宿舍躺平", "二楼中超", "请假休息"], intercept: "🍱 呼呼！午休干饭干大觉时间到！去二楼中超整点好吃的，或者回宿舍狠狠躺平！" };
             }
-            
-            let list = [];
-            for (let key in poolData) {
-                if (key === "Lidl" && (day < 3 || day > 6)) continue;
-                if ((key === "瓜果market" || key === "瓜果市场") && hour >= 14) continue;
-                list.push(key);
+            if (currentHour >= 14 && currentHour < 17) {
+                return { status: "ready", data: ["IDEA"], intercept: "🪐 午后能量攻坚战开始！集中注意力，打开【IDEA】大杀四方，今晚准时下班！" };
             }
-
-            return { error: false, list: list };
+            if (currentHour >= 17 && currentHour < 19) {
+                return { status: "ready", data: ["随便转转", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超", "银行取钱"], intercept: "🏁 下班/放学铃声响起！自由的灵魂开始复苏，去逛超市、取钱或者去中超采购快乐吧！" };
+            }
         }
 
-        function startLottery() {
-            if (isShaking) return;
+        let pool = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超", "银行取钱"];
+        if (dayOfWeek >= 3 && dayOfWeek <= 6) { pool.push("Lidl"); }
+        if (currentHour < 14) { pool.push("瓜果市场"); }
+        
+        return { status: "ready", data: pool, intercept: null };
+    }
 
-            const res = getAvailablePool();
-            if (res.error) {
-                document.getElementById('resLocation').innerText = res.title;
-                document.getElementById('resPoem').innerText = "静若止水，动若脱兔。";
-                document.getElementById('resAnalysis').innerText = res.msg;
-                document.getElementById('resultMask').classList.add('show');
+    function createFloatingText() {
+        const textSpan = document.createElement('span');
+        textSpan.className = 'floating-text';
+        
+        const now = Date.now();
+        clickTimeBuffer = clickTimeBuffer.filter(t => now - t < 2000);
+        
+        let pool = clickTimeBuffer.length > 6 ? fastShakeWords : poolWords;
+        let selectedItem = pool[Math.floor(Math.random() * pool.length)];
+
+        if (selectedItem.type === "gold") {
+            textSpan.innerHTML = `🪙✨ ${selectedItem.text}`;
+            textSpan.classList.add('gold-style');
+        } else if (selectedItem.type === "luck") {
+            textSpan.innerHTML = `🧧 福 ${selectedItem.text}`;
+            textSpan.classList.add('luck-style');
+        } else {
+            textSpan.innerText = selectedItem.text;
+        }
+
+        // 修改：飘字生于手机视口容器内部，确保被 overflow:hidden 完美剪裁
+        const viewport = document.getElementById('viewportCard');
+        const viewWidth = viewport.clientWidth;
+        const viewHeight = viewport.clientHeight;
+        let leftPos = 0;
+
+        if (sideToggle) {
+            leftPos = Math.random() * (viewWidth * 0.22) + 15;
+        } else {
+            leftPos = Math.random() * (viewWidth * 0.22) + (viewWidth * 0.72) - 15;
+        }
+        sideToggle = !sideToggle;
+
+        let topPos = (viewHeight * 0.42) + (Math.random() * 60);
+
+        textSpan.style.left = leftPos + 'px';
+        textSpan.style.top = topPos + 'px';
+
+        viewport.appendChild(textSpan);
+        setTimeout(() => textSpan.remove(), 1200);
+    }
+
+    function startDraw() {
+        clickTimeBuffer.push(Date.now());
+        totalDrawsInShortTime++;
+
+        const wrapper = document.getElementById('wrapper');
+        const stickContainer = document.getElementById('stickContainer');
+        const luckyStick = document.getElementById('luckyStick');
+        const luckyStickText = document.getElementById('luckyStickText');
+        const drawBtn = document.getElementById('drawBtn');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultValue = document.getElementById('resultValue');
+        const resultTag = document.getElementById('resultTag');
+        const resultComp = document.getElementById('resultCompliment');
+        const resultMission = document.getElementById('resultMission');
+        const resultMidnight = document.getElementById('resultMidnight');
+        const viewportCard = document.getElementById('viewportCard');
+        
+        document.body.classList.remove('golden-easter-egg');
+        viewportCard.classList.remove('golden-mode');
+        luckyStick.style.backgroundColor = "#118ab2";
+
+        luckyStick.classList.remove('fly-out-anim');
+        resultTitle.innerText = "灵签演道通玄奥，宝箓含神赐福祥...";
+        resultValue.innerText = "⚡";
+        resultTag.style.display = "none";
+        resultComp.style.display = "none";
+        resultMission.style.display = "none";
+        resultMidnight.style.display = "none";
+        drawBtn.disabled = true;
+
+        wrapper.classList.add('shaking');
+        stickContainer.classList.add('sticks-shaking');
+
+        const intervalTime = clickTimeBuffer.length > 5 ? 100 : 160;
+        const floatTimer = setInterval(createFloatingText, intervalTime);
+
+        setTimeout(() => {
+            clearInterval(floatTimer);
+            wrapper.classList.remove('shaking');
+            stickContainer.classList.remove('sticks-shaking');
+
+            const nowTime = new Date();
+            const poolResult = getAvailablePool();
+            
+            if (poolResult.status === "sunday_rest") {
+                luckyStickText.innerText = "偷懒大吉";
+                luckyStick.classList.add('fly-out-anim');
+                setTimeout(() => {
+                    resultTitle.innerText = "💤 【祖师爷偏心提示】";
+                    resultValue.innerText = "今天放假，偷懒无罪！";
+                    resultTag.innerText = "【神仙放假·特别定制签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = "✨ 今天是周日，天地磁场都在劝你理直气壮地躺平。不准焦虑、不准自我CPU，今天最大的任务就是把舒适度拉满，做个快乐的闲人！";
+                    resultComp.style.display = "block";
+                    drawBtn.innerText = "再摇一次功德";
+                    drawBtn.style.backgroundColor = "#ffca3a"; drawBtn.style.color = "#2b1f1d";
+                    drawBtn.disabled = false;
+                }, 300);
                 return;
             }
 
-            isShaking = true;
-            const wrapper = document.getElementById('cylinderWrapper');
-            const luckyStick = document.getElementById('luckyStick');
-            
-            wrapper.classList.add('shaking');
-
-            setTimeout(() => {
-                wrapper.classList.remove('shaking');
-                luckyStick.classList.add('stick-anim');
+            if (nowTime.getDay() === 5 && Math.random() < 0.10) {
+                luckyStickText.innerText = "全免跑路";
+                luckyStick.style.backgroundColor = "#d4af37";
+                luckyStick.classList.add('fly-out-anim');
+                
+                document.body.classList.add('golden-easter-egg');
+                viewportCard.classList.add('golden-mode');
 
                 setTimeout(() => {
-                    showResult(res.list);
-                }, 800);
+                    resultTitle.innerText = "🏆 【神级暴运·天赐全免彩蛋】";
+                    resultValue.innerText = "周五跑路大满贯！";
+                    resultTag.innerText = signTags["周五跑路大满贯"];
+                    resultTag.style.display = "inline-block";
+                    
+                    const compList = compliments["周五跑路大满贯"];
+                    resultComp.innerText = compList[Math.floor(Math.random() * compList.length)];
+                    resultComp.style.display = "block";
+                    
+                    resultMission.innerText = "💡 隐藏限定任务：立刻收拾包包，步伐嚣张地大步流星离开现场，一秒都不准多逗留！";
+                    resultMission.style.display = "block";
 
-            }, 1200);
-        }
+                    drawBtn.innerText = "承蒙天意，高调跑路！";
+                    drawBtn.style.backgroundColor = "#ffa200"; drawBtn.style.color = "#fff";
+                    drawBtn.disabled = false;
+                }, 300);
+                return;
+            }
 
-        function showResult(validList) {
-            const now = new Date();
-            const day = now.getDay();
-            
-            let finalLocation = "";
-            let finalPoem = "";
-            let finalAnalysis = "";
+            let currentPool = poolResult.data;
+            const randomIndex = Math.floor(Math.random() * currentPool.length);
+            let finalResult = currentPool[randomIndex];
 
-            if (day === 5 && Math.random() < 0.10) {
-                document.body.classList.add('gold-theme');
-                document.getElementById('title-text').innerText = "✨ 灵瑞金光筒 ✨";
-                
-                finalLocation = goldEgg.location;
-                finalPoem = goldEgg.poem;
-                finalAnalysis = goldEgg.analysis;
+            if (finalResult === lastResult) {
+                repeatCount++;
             } else {
-                const randomLocation = validList[Math.floor(Math.random() * validList.length)];
-                const poems = poolData[randomLocation];
-                const randomPoemObj = poems[Math.floor(Math.random() * poems.length)];
-
-                finalLocation = `位置：${randomLocation}`;
-                finalPoem = `「 ${randomPoemObj.poem} 」`;
-                finalAnalysis = randomPoemObj.text;
+                repeatCount = 1;
+                lastResult = finalResult;
             }
 
-            document.getElementById('resLocation').innerText = finalLocation;
-            document.getElementById('resPoem').innerText = finalPoem;
-            document.getElementById('resAnalysis').innerText = finalAnalysis;
-            
-            document.getElementById('resultMask').classList.add('show');
-        }
+            luckyStickText.innerText = luckyIdioms[finalResult] || "今日宜行";
+            luckyStick.classList.add('fly-out-anim');
 
-        function closeResult() {
-            document.getElementById('resultMask').classList.remove('show');
-            const luckyStick = document.getElementById('luckyStick');
-            luckyStick.classList.remove('stick-anim');
-            
             setTimeout(() => {
-                isShaking = false;
-            }, 400);
-        }
-
-        document.getElementById('cylinderWrapper').addEventListener('click', startLottery);
-
-        // 原生手机摇一摇支持
-        let lastX = 0, lastY = 0, lastZ = 0;
-        let lastUpdate = 0;
-        const SHAKE_THRESHOLD = 800;
-
-        function deviceMotionHandler(eventData) {
-            let acceleration = eventData.accelerationIncludingGravity;
-            let curTime = new Date().getTime();
-            
-            if ((curTime - lastUpdate) > 100) {
-                let diffTime = curTime - lastUpdate;
-                lastUpdate = curTime;
-                
-                let speed = Math.abs(acceleration.x + acceleration.y + acceleration.z - lastX - lastY - lastZ) / diffTime * 10000;
-                if (speed > SHAKE_THRESHOLD) {
-                    startLottery();
+                if (poolResult.intercept && repeatCount < 3 && totalDrawsInShortTime < 5) {
+                    resultTitle.innerText = "⏳ 【精准作息掌控流】";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = poolResult.intercept;
+                    resultComp.style.display = "block";
                 }
-                lastX = acceleration.x;
-                lastY = acceleration.y;
-                lastZ = acceleration.z;
-            }
-        }
+                else if (repeatCount >= 3) {
+                    resultTitle.innerText = "🔮 【抓包！命中注定的天意】";
+                    resultValue.innerText = `${finalResult} (第${repeatCount}次)`;
+                    resultTag.innerText = "【天道金牌·退无可退签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `🤣 怎么又是【${finalResult}】？！本签筒都已经尽力帮你打乱顺序了，结果还是它！别嘴硬和抵抗啦，这就是命中注定的选择。赶紧收拾收拾，顺应天意高调出发！`;
+                    resultComp.style.display = "block";
+                } 
+                else if (totalDrawsInShortTime >= 5) {
+                    resultTitle.innerText = "👑 【天道强制特赦令】";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = "【直接盲选·终结纠结签】";
+                    resultTag.style.display = "inline-block";
+                    resultComp.innerText = `👀 别再挑啦！祖师爷看你反复摇晃了 ${totalDrawsInShortTime} 次，代表你的纠结磁场快超标了！现在听话，不要想了，闭眼选【${finalResult}】作为你的终极答案，立刻出发去迎接快乐！`;
+                    resultComp.style.display = "block";
+                } 
+                else {
+                    resultTitle.innerText = "🎉 乾坤定夺！今日宜 ——";
+                    resultValue.innerText = `${finalResult}`;
+                    resultTag.innerText = signTags[finalResult] || "【天赐上上签】";
+                    resultTag.style.display = "inline-block";
+                    
+                    const compList = compliments[finalResult];
+                    resultComp.innerText = compList[Math.floor(Math.random() * compList.length)];
+                    resultComp.style.display = "block";
+                }
 
-        if (window.DeviceMotionEvent) {
-            window.addEventListener('devicemotion', deviceMotionHandler, false);
-        }
-    </script>
+                resultMission.innerText = missionPool[Math.floor(Math.random() * missionPool.length)];
+                resultMission.style.display = "block";
+
+                const now = new Date();
+                if (now.getHours() >= 23 || now.getHours() < 5) {
+                    resultMidnight.innerText = "🌙 (悄悄话：现在已经是深夜啦。不管今天摇到了去哪儿，现在的首要任务是盖好被子睡觉觉。明天睡醒了，好运自会陪你一同出发。晚安，全世界最棒的你。)";
+                    resultMidnight.style.display = "block";
+                }
+                
+                drawBtn.innerText = "不服气，再请一签";
+                drawBtn.style.backgroundColor = "#4caf50"; drawBtn.style.color = "#fff";
+                drawBtn.disabled = false;
+            }, 300);
+
+        }, 1100);
+    }
+
+    setInterval(() => { totalDrawsInShortTime = 0; }, 300000);
+    updateTimeHint();
+    setInterval(updateTimeHint, 60000);
+</script>
 </body>
 </html>
