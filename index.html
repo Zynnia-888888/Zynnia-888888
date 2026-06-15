@@ -2,164 +2,744 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>时来运转</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7eedf linear-gradient(rgba(224,211,192,0.4) 1px, transparent 1px) repeat 0 0/20px 20px; background-image: linear-gradient(rgba(224,211,192,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(224,211,192,0.4) 1px, transparent 1px); color: #2b1f1d; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; overflow-x: hidden; position: relative; }
-        .container { width: 100%; max-width: 380px; background: #fffdf9; padding: 40px 20px 30px; border-radius: 32px; border: 4px solid #2b1f1d; box-shadow: 8px 8px 0 #cfbda3; text-align: center; position: relative; z-index: 10; }
-        h1 { font-size: 28px; color: #cc4c33; letter-spacing: 2px; font-weight: 900; margin-bottom: 6px; }
-        .subtitle { font-size: 13px; color: #7b6865; margin-bottom: 40px; font-weight: 500; }
-        .cylinder-wrapper { height: 280px; position: relative; margin-bottom: 30px; display: flex; justify-content: center; align-items: flex-end; }
-        .stick-container { position: absolute; bottom: 110px; width: 140px; height: 130px; display: flex; justify-content: center; align-items: flex-end; }
-        .stick { width: 35px; height: 110px; background: #f5cf82; border: 3px solid #2b1f1d; border-radius: 8px 8px 0 0; margin: 0 -10px; transform-origin: bottom center; position: relative; box-shadow: -2px 0 0 #2b1f1d; }
-        .stick::before { content: ''; position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: #2b1f1d; border-radius: 50%; }
-        .stick:nth-child(1) { transform: rotate(-15deg) translateY(5px); background: #e8bd68; }
-        .stick:nth-child(2) { transform: rotate(-7deg) translateY(-2px); background: #f7d692; }
-        .stick:nth-child(3) { transform: rotate(-2deg) translateY(3px); background: #eed08a; }
-        .stick:nth-child(4) { transform: rotate(5deg) translateY(-5px); background: #f5cf82; }
-        .stick:nth-child(5) { transform: rotate(12deg) translateY(2px); background: #e5b85c; }
-        .cylinder { width: 150px; height: 140px; background: #e85d44; border: 4px solid #2b1f1d; border-radius: 16px 16px 28px 28px; position: relative; z-index: 10; box-shadow: 5px 5px 0 #2b1f1d; display: flex; justify-content: center; align-items: center; }
-        .cylinder::after { content: '万事皆宜'; position: absolute; padding: 8px 4px; background: #ffca3a; border: 3px solid #2b1f1d; border-radius: 6px; color: #2b1f1d; font-weight: 900; font-size: 15px; writing-mode: vertical-rl; text-orientation: upright; letter-spacing: 2px; box-shadow: 3px 3px 0 #2b1f1d; }
-        .lucky-stick-out { position: absolute; width: 45px; height: 150px; background: #118ab2; border: 4px solid #2b1f1d; bottom: 110px; z-index: 5; border-radius: 12px 12px 6px 6px; display: none; box-shadow: 6px 6px 0 rgba(0,0,0,0.15); transform-origin: center; }
-        .lucky-stick-out::before { content: ''; position: absolute; top: 12px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; background: #2b1f1d; border-radius: 50%; }
-        .lucky-stick-text { writing-mode: vertical-rl; text-orientation: upright; font-size: 13px; color: #fff; font-weight: 900; margin: 32px auto 0; letter-spacing: 4px; }
-        .shaking { animation: handShake 0.4s ease-in-out infinite; }
-        .sticks-shaking .stick { animation: stickBumpy 0.35s ease-in-out infinite; }
-        .sticks-shaking .stick:nth-child(even) { animation-delay: 0.1s; }
-        .fly-out-anim { display: block !important; animation: 牌飞出 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .btn-draw { background: #ff6b6b; color: #fff; border: 4px solid #2b1f1d; padding: 14px 50px; font-size: 18px; font-weight: 900; border-radius: 20px; cursor: pointer; box-shadow: 4px 4px 0 #2b1f1d; letter-spacing: 2px; transition: transform 0.1s, box-shadow 0.1s; }
-        .btn-draw:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #2b1f1d; }
-        .btn-draw:disabled { background: #cbd5e1; color: #94a3b8; cursor: not-allowed; box-shadow: none; transform: none; }
-        .result-box { margin-top: 30px; min-height: 140px; padding: 20px; border-radius: 20px; background: #fdfcf7; border: 3px solid #2b1f1d; box-shadow: 4px 4px 0 #eedcc5; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .result-title { font-size: 13px; font-weight: 700; color: #7b6865; margin-bottom: 8px; }
-        .result-value { font-size: 24px; font-weight: 900; color: #cc4c33; margin-bottom: 12px; }
-        .result-compliment { font-size: 14px; color: #4a3532; font-weight: 700; line-height: 1.6; background: #fff5e6; padding: 10px 14px; border-radius: 12px; border: 2px dashed #2b1f1d; max-width: 95%; text-align: left; }
-        .hint-text { font-size: 11px; color: #a3908c; margin-top: 20px; font-weight: 500; line-height: 1.5; }
-        .float-text { position: fixed; font-weight: 900; font-size: 18px; color: #cc4c33; text-shadow: 2px 2px 0 #fff; pointer-events: none; animation: floatUp 1.2s ease-out forwards; z-index: 999; white-space: nowrap; }
-        .gold-particle { position: fixed; font-size: 24px; pointer-events: none; animation: particleFall 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; z-index: 998; }
-        @keyframes handShake { 0%,100% { transform: translate(0, 0) rotate(0deg); } 20% { transform: translate(-12px, 6px) rotate(-14deg); } 40% { transform: translate(10px, -4px) rotate(12deg); } 60% { transform: translate(-10px, -2px) rotate(-10deg); } 80% { transform: translate(8px, 4px) rotate(8deg); } }
-        @keyframes stickBumpy { 0%, 100% { transform: translateY(0) rotate(0deg); } 33% { transform: translateY(-25px) rotate(-12deg); } 66% { transform: translateY(5px) rotate(15deg); } }
-        @keyframes 牌飞出 { 0% { bottom: 110px; opacity: 0; transform: scale(0.6) rotate(-45deg); } 60% { bottom: 230px; opacity: 1; transform: scale(1.1) rotate(15deg); } 100% { bottom: 190px; opacity: 1; transform: scale(1) rotate(5deg); } }
-        @keyframes floatUp { 0% { transform: translateY(0) scale(0.8); opacity: 0; } 20% { opacity: 1; transform: translateY(-20px) scale(1.2); } 100% { transform: translateY(-100px) scale(1); opacity: 0; } }
-        @keyframes particleFall { 0% { transform: translate(0, 0) rotate(0deg); opacity: 1; } 100% { transform: translate(var(--x), var(--y)) rotate(720deg); opacity: 0; } }
+        /* 基础复古宣纸风画布 */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4edd8;
+            background-image: radial-gradient(rgba(230,215,185,0.3) 1px, transparent 0),
+                              radial-gradient(rgba(230,215,185,0.3) 1px, transparent 0);
+            background-size: 24px 24px;
+            background-position: 0 0, 12px 12px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #2b1f1d;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* 顶部大标题 */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .header h1 {
+            font-size: 30px;
+            font-weight: 900;
+            color: #cc4c33;
+            margin: 0 0 6px 0;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 0px #fff;
+        }
+        .header p {
+            font-size: 13px;
+            color: #7b6865;
+            margin: 0;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        /* 交互环境主体 */
+        .stage {
+            width: 100%;
+            height: 280px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+
+        /* 大扁平手绘签筒组件 */
+        .cylinder-wrapper {
+            position: relative;
+            cursor: pointer;
+            transform-origin: bottom center;
+            z-index: 10;
+        }
+        
+        /* 内部集成的粗厚木牌签群 */
+        .stick-pool {
+            position: absolute;
+            top: -65px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 110px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .stick-in-pool {
+            width: 24px;
+            height: 100px;
+            background-color: #e59866;
+            border: 3px solid #2b1f1d;
+            border-bottom: none;
+            border-radius: 6px 6px 0 0;
+            margin: 0 -5px;
+            transform-origin: bottom center;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .stick-in-pool::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background-color: #2b1f1d;
+            border-radius: 50%;
+        }
+        /* 丰富木牌签群的多彩堆叠感 */
+        .stick-in-pool:nth-child(1) { transform: rotate(-15deg); background-color: #f5b041; }
+        .stick-in-pool:nth-child(2) { transform: rotate(-7deg); background-color: #f4d03f; height: 105px; z-index: 2;}
+        .stick-in-pool:nth-child(3) { transform: rotate(0deg); background-color: #eb984e; height: 110px; z-index: 3;}
+        .stick-in-pool:nth-child(4) { transform: rotate(8deg); background-color: #f4d03f; height: 103px; z-index: 2;}
+        .stick-in-pool:nth-child(5) { transform: rotate(18deg); background-color: #f5b041; }
+
+        /* 外观大签筒 */
+        .cylinder {
+            width: 150px;
+            height: 140px;
+            background-color: #e85d44;
+            border: 4px solid #2b1f1d;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 6px 6px 0px #2b1f1d;
+            position: relative;
+            overflow: visible;
+            box-sizing: border-box;
+        }
+        .cylinder::after {
+            content: "万事皆宜";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border: 3px solid #2b1f1d;
+            padding: 8px 12px;
+            font-size: 16px;
+            font-weight: 900;
+            color: #2b1f1d;
+            border-radius: 8px;
+            white-space: nowrap;
+            box-shadow: 2px 2px 0px #2b1f1d;
+            letter-spacing: 2px;
+        }
+        /* 筒身复古镶边装饰 */
+        .cylinder-rim {
+            position: absolute;
+            top: 0;
+            left: -4px;
+            width: 150px;
+            height: 16px;
+            background-color: #ffbe0b;
+            border: 4px solid #2b1f1d;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* 飞出的宽大金色吉签木牌 */
+        .lucky-stick {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            width: 48px;
+            height: 180px;
+            background-color: #ffbe0b;
+            border: 4px solid #2b1f1d;
+            border-radius: 12px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 5;
+            box-sizing: border-box;
+            padding: 12px 4px;
+            transform-origin: center center;
+        }
+        .lucky-stick-inner {
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #2b1f1d;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .lucky-stick-hole {
+            width: 6px;
+            height: 6px;
+            background-color: #2b1f1d;
+            border-radius: 50%;
+            margin-bottom: 8px;
+        }
+        .lucky-stick-text {
+            font-size: 16px;
+            font-weight: 900;
+            color: #2b1f1d;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+            letter-spacing: 4px;
+        }
+
+        /* 核心大抽签按钮 */
+        .btn-draw {
+            background-color: #ff6b6b;
+            color: #fff;
+            border: 4px solid #2b1f1d;
+            padding: 14px 40px;
+            font-size: 18px;
+            font-weight: 900;
+            border-radius: 20px;
+            cursor: pointer;
+            box-shadow: 4px 4px 0px #2b1f1d;
+            letter-spacing: 2px;
+            transition: background-color 0.2s, transform 0.1s, box-shadow 0.1s;
+        }
+        .btn-draw:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2b1f1d;
+        }
+        .btn-draw:disabled {
+            background-color: #cbd5e1;
+            color: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 4px 4px 0px #94a3b8;
+        }
+
+        /* 结果展示卡片 */
+        .result-box {
+            margin-top: 30px;
+            width: 100%;
+            min-height: 140px;
+            padding: 22px;
+            border-radius: 24px;
+            background-color: #fdfcf7;
+            border: 4px solid #2b1f1d;
+            box-shadow: 5px 5px 0px #eedcc5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .result-title {
+            font-size: 22px;
+            font-weight: 900;
+            color: #cc4c33;
+            margin-bottom: 4px;
+        }
+        .result-tag {
+            font-size: 11px;
+            background: #cc4c33;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: none;
+            letter-spacing: 1px;
+        }
+        .result-compliment {
+            font-size: 14px;
+            color: #4a3532;
+            font-weight: 700;
+            line-height: 1.6;
+            background-color: #fff5e6;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px dashed #2b1f1d;
+            width: 100%;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        /* 重构后的今日生活万事历：严格轴线中央对称 */
+        .almanac-card {
+            width: 100%;
+            margin-top: 20px;
+            background-color: #fdfcf7;
+            border: 4px solid #2b1f1d;
+            border-radius: 24px;
+            padding: 16px;
+            box-sizing: border-box;
+            box-shadow: 5px 5px 0px #eedcc5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .almanac-header {
+            font-size: 15px;
+            font-weight: 900;
+            color: #2b1f1d;
+            margin-bottom: 14px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        /* 双实线框体：保证宜忌内容在中心轴线上对称对齐 */
+        .almanac-body {
+            width: 100%;
+            border-top: 3px double #2b1f1d;
+            border-bottom: 3px double #2b1f1d;
+            padding: 12px 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: flex-start;
+            box-sizing: border-box;
+        }
+        /* 划分左右黄金中轴对称区域 */
+        .almanac-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+            padding: 0 4px;
+        }
+        .almanac-section:first-child {
+            border-right: 1px dashed #cbd5e1;
+        }
+        /* 规范化复古撞色 */
+        .almanac-label {
+            font-size: 18px;
+            font-weight: 900;
+            padding: 2px 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+        .almanac-section.yi .almanac-label {
+            background-color: #e2f4e9;
+            color: #1b8a5a; /* 复古翡翠绿 */
+        }
+        .almanac-section.ji .almanac-label {
+            background-color: #fce8e6;
+            color: #cc4c33; /* 复古朱砂红 */
+        }
+        .almanac-list {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4a3532;
+            line-height: 1.8;
+        }
+        .almanac-item {
+            margin: 2px 0;
+            white-space: nowrap;
+        }
+
+        /* 底部系统实时显示 */
+        .footer-time {
+            margin-top: 25px;
+            font-size: 11px;
+            color: #7b6865;
+            font-weight: bold;
+            background-color: rgba(255,255,255,0.4);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* 飘动氛围字 */
+        .floating-text {
+            position: absolute;
+            font-size: 14px;
+            font-weight: 900;
+            color: #ffae19;
+            text-shadow: 1px 1px 0px #2b1f1d;
+            opacity: 0;
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        /* 动画群 */
+        @keyframes handShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-8px, 3px) rotate(-6deg); }
+            20% { transform: translate(6px, -4px) rotate(7deg); }
+            30% { transform: translate(-7px, 2px) rotate(-5deg); }
+            40% { transform: translate(5px, -3px) rotate(6deg); }
+            50% { transform: translate(-6px, 4px) rotate(-6deg); }
+            60% { transform: translate(6px, -2px) rotate(5deg); }
+            70% { transform: translate(-4px, 1px) rotate(-4deg); }
+            80% { transform: translate(4px, -3px) rotate(4deg); }
+            90% { transform: translate(-2px, 2px) rotate(-2deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .anim-shake {
+            animation: handShake 1.1s ease-in-out infinite;
+        }
+
+        @keyframes stickBumpy {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-22px) rotate(-8deg); }
+            50% { transform: translateY(5px) rotate(4deg); }
+            75% { transform: translateY(-18px) rotate(6deg); }
+        }
+        .anim-bumpy {
+            animation: stickBumpy 0.28s ease-in-out infinite;
+        }
+
+        @keyframes stickFlyOut {
+            0% { transform: translate(-50%, 0) scale(0.4) rotate(0deg); opacity: 0; display: block; bottom: 40px; }
+            50% { transform: translate(-50%, -150px) scale(1.1) rotate(180deg); opacity: 1; }
+            75% { transform: translate(-50%, -110px) scale(1.05) rotate(370deg); opacity: 1; }
+            100% { transform: translate(-50%, -120px) scale(1) rotate(360deg); opacity: 1; bottom: 40px; }
+        }
+        .anim-flyout {
+            animation: stickFlyOut 0.75s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes textFloatUp {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            20% { opacity: 1; transform: translateY(-20px) scale(1.1); }
+            80% { opacity: 0.9; }
+            100% { transform: translateY(-70px) scale(0.9); opacity: 0; }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>天机万事筒</h1>
-    <div class="subtitle">—— 摇晃木筒 · 戳穿今日纠结 ——</div>
-    <div class="cylinder-wrapper" id="wrapper">
-        <div class="stick-container" id="stickContainer"><div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div><div class="stick"></div></div>
-        <div class="lucky-stick-out" id="luckyStick"><div class="lucky-stick-text" id="luckyStickText">今日宜行</div></div>
-        <div class="cylinder"></div>
+
+    <div class="container">
+        
+        <div class="header">
+            <h1>天机万事筒</h1>
+            <p>诚心问卜 · 指点今日生活去向</p>
+        </div>
+
+        <div class="stage">
+            <div class="cylinder-wrapper" id="cylinderWrapper">
+                <div class="stick-pool" id="stickPool">
+                    <div class="stick-in-pool"></div>
+                    <div class="stick-in-pool"></div>
+                    <div class="stick-in-pool"></div>
+                    <div class="stick-in-pool"></div>
+                    <div class="stick-in-pool"></div>
+                </div>
+                <div class="cylinder">
+                    <div class="cylinder-rim"></div>
+                </div>
+            </div>
+            <div class="lucky-stick" id="luckyStick">
+                <div class="lucky-stick-inner">
+                    <div class="lucky-stick-hole"></div>
+                    <div class="lucky-stick-text" id="luckyStickText">出行</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-draw" id="btnDraw" onclick="startDivination()">虔诚摇签</button>
+
+        <div class="result-box">
+            <div class="result-tag" id="resultTag">有求必应</div>
+            <div class="result-title" id="resultTitle">摇动万事筒以窥天机</div>
+            <div class="result-compliment" id="resultCompliment">每日出门、抉择或纠结前，不妨平心静气摇晃签筒。不设限、不贴标签，用积极舒畅的心态开启当下的生活。</div>
+        </div>
+
+        <div class="almanac-card">
+            <div class="almanac-header">📅 今日生活万事历</div>
+            <div class="almanac-body">
+                <div class="almanac-section yi">
+                    <div class="almanac-label">宜</div>
+                    <div class="almanac-list" id="almanacYiList">
+                        </div>
+                </div>
+                <div class="almanac-section ji">
+                    <div class="almanac-label">忌</div>
+                    <div class="almanac-list" id="almanacJiList">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-time" id="footerTime">当前系统时间：载入中...</div>
+
     </div>
-    <button class="btn-draw" id="drawBtn" onclick="startDraw()">大力摇晃</button>
-    <div class="result-box">
-        <div id="resultTitle" class="result-title">心诚则灵，答案自现</div>
-        <div id="resultValue" class="result-value">✏️</div>
-        <div id="resultCompliment" class="result-compliment" style="display:none;"></div>
-    </div>
-    <div class="hint-text" id="timeHint"></div>
-</div>
-<script>
-    const compliments = {
-        "IDEA": ["💻 灵感爆发！思维的火花在疯狂闪烁，你今天的专注力和逻辑力简直强大到无可匹敌！", "🚀 核心力量全开！一旦专注起来，任何难题在你面前都会迎刃而解，今天的效率直接拉满！", "✨ 锐意进取，势不可挡！你现在身上散发的认真光芒，足以吸引全宇宙的正能量为你开路！"],
-        "明珠": ["💎 熠熠生辉！抽中这个选项，意味着你今天的运势也如明珠般璀璨，任何纠结都会烟消云散！", "🌟 气场高调且迷人！做选择时如此果断又具前瞻性，今天的你注定是不可忽视的焦点！", "🔮 慧眼独具！你总是知道什么最适合自己，带着这份无敌的自信，今天万事皆能称心如意！"],
-        "请假休息": ["🌸 彻底给自己松绑！懂得在疲惫时按下退出键，这才是最顶级的精神自律与魄力！", "🧘‍♂️ 顺应身体的声音！今天给自己一个无压力的假期，你的身心电量即将百分百拉满！", "🔋 给生活放个假！今天彻底隔绝工作的纷扰，好运正在悄悄为你蓄积下一波能量！"],
-        "随便转转": ["🍃 随心所欲的漫步！不需要刻意安排什么路线，最浪漫的盲盒惊喜往往就藏在未知的街角！", "🗺️ 自由洒脱的灵魂！像云朵一样在城市里惬意漂流，今天的你自带无敌松弛感！", "👟 卸下包袱去探索！散步是成本最低的心理按摩，今天沿途的风都会温柔地偏向你！"],
-        "公园散步": ["🌳 去林荫树下大口吸氧！你的个人磁场将在绿植与泥土间得到最纯净的净化与补充！", "☀️ 捕捉细碎的阳光！在大自然里找回久违的内心平静，今天又是被温柔治愈的一天！", "🕊️ 倾听飞鸟和微风的私语！这是对日常辛劳最好的款待，元气值正在疯狂回弹中！"],
-        "巡视果园": ["🍎 视察大自然的后花园！在满眼生机盎然的枝头间，找回最纯粹、最接地气的快乐！", "🧺 踏出活力满满的步调！去呼吸带有果香的空气，今天你整个人都散发着灿烂的生命力！", "👒 走出沉闷的一点线！去见证万物的成熟与生长，大自然会赋予你全新的开阔胸襟！"],
-        "宿舍躺平": ["🛌 舒服到骨子里！让床榻成为你专属的避风港，静静享受这份与世无争的高品质安闲！", "💤 完美屏蔽世俗噪音！不被任何外界节奏所绑架，你当下的安逸便是最凡尘的小确幸！", "☕ 享受彻底的虚度光阴！这种专注自我的放空时刻，最能给紧绷的神经做一次深层SPA！"],
-        "老Maxi": ["🛒 奔向最踏实的老地方！熟悉的货架和陈列最能给人安稳的安全感，今天去精挑选购吧！", "📦 熟门熟路的生活惯性！不需要费心寻找，经典的选择往往能带给你最扎实的物质满足！", "🥖 推上购物车去查漏补缺！用老牌超市的厚实物资，来填满你平淡却精致的柴米油盐！"],
-        "新Maxi": ["🛍️ 探索未知的全新商区！敞亮现代的空间正等待你那充满好奇心的高贵灵魂前去打卡！", "🔥 捕捉全新的购物氛围！开阔的视角带来极佳的消费体验，今天说不定能淘到新宝藏！", "✨ 换个环境换个心情！在宽敞崭新的过道里漫步，你的整体气场也会随之变得耳目一新！"],
-        "Lilly": ["💅 极致优雅的精致美学！去挑选那些带有香气、能够瞬间提升幸福感的美妆或香氛物件！", "💄 践行生活的高级质感！懂得把大把的时间和心思花在取悦自己身上，你的品味绝不在平均线！", "🧴 宠爱自己的细节大师！精心挑选的每一款个护好物，都在无声宣告着你对日子的讲究！"],
-        "DM": ["💖 理智又务实的自我打理！把居家百货、实用药妆安排得井井有条，体现了强大的生活掌控力！", "🧼 极度舒适的日常采购！在琳琅满目的生活百货区穿梭，用清爽干净的日用品治愈所有的浮躁！", "🧻 井然有序的严选体验！你买下的每一样小而美生活用品，都是回馈给日常的小确幸！"],
-        "瓜果市场": ["🍉 迎接热气腾腾的市井烟火！这里拥有全城最新鲜、最具多汁活力的色彩与自然能量！", "🍓 充满朝气的清晨采购！去挑选带着露水的应季蔬果，将今天的生活底色彻底刷成香甜味！", "🥝 踩着最饱满的阳光出发！大大小小的摊位会给你最热烈、最市井、最真实的快乐反馈！"],
-        "二楼中超": ["🥢 慰藉灵魂的家乡味觉！去那充满熟悉香味的货架深处，搜罗最能治愈胃袋的传统地道美食！", "🥟 把舌尖上的温暖带回家！每一次挑选火锅底料或经典零食，都是在给生活注入熟悉的幸福！", "🍜 满足感溢出屏幕！用最地道的中式美味犒劳自己的胃，今晚的餐桌注定是一场饕餮盛宴！"],
-        "Lidl": ["🥨 极具性价比的高效扫货！在琳琅满目的货架间快准狠地下手，享受纯粹且利落的购物快感！", "📦 极具韧性的实力派选择！这里是生活的坚实后盾，去装满你的储藏室，胜券在握！", "🥖 带着胜利者的精明眼光出发！在经典百货中寻找最具生活智慧的组合，去满载而归吧！"],
-        "银行取钱": ["💰 钞能力疯狂充能！听从财富的内心召唤，走进现金汇聚之门，看着数字落地最让人心安！", "🪙 扎扎实实的财富握感！今日财星高照，金钱磁场全面全开，去稳健带回专属于你的生活底气！", "💴 运势直接拨云见日！在沙沙的取款声中，迎接你命中注定的富足无忧与大财小财！"]
-    };
-    const weekdayFloatingTexts = {
-        1: ["周一退散！ 🚫", "摸鱼有理 🐟", "键盘敲烂，工资过万 💰"], 2: ["拒绝内耗 🥂", "薪水小偷 🥷", "稳定发疯 🧠"],
-        3: ["别找我了 🙅‍♂️", "灵魂出窍 👻", "撑住就是胜利 ⚓"], 4: ["疯狂星期四！ 🍗", "V我50 🪙", "黎明前的曙光 ✨"],
-        5: ["准备跑路！ 🏃‍♂️", "周五万岁 🎉", "下班倒计时 ⏳"], 6: ["享受假期 🥂", "拒绝加班 ❌", "快乐无限 🥳"]
-    };
-    const calendarConfig = {
-        0: { alms: "闭筒全天大休息、享受赖床", avoid: "处理工作微信、定早起闹钟", text: "周日闭筒充能！请无负罪感地睡到自然醒~" },
-        1: { alms: "合理摸鱼、迟到五分钟、狂喝冰美式", avoid: "早起、召开高压早会、情绪紧绷" },
-        2: { alms: "悄悄吃零食、果断拒绝无理需求", avoid: "工作内耗、对甩锅行为妥协" },
-        3: { alms: "买降压小甜品、精准准点打卡溜走", avoid: "深夜硬撑加班、为了琐事抓狂" },
-        4: { alms: "享受疯狂星期四套餐、暗中收拾包裹", avoid: "主动揽活、陷入职场自我怀疑" },
-        5: { alms: "提前把工位收拾干净、顺走办公室纸巾", avoid: "在16:59提新bug、搞职场大新闻" },
-        6: { alms: "优雅享受快乐周末、报复性娱乐", avoid: "手贱点开钉钉微信、随手回复收到" }
-    };
 
-    function updateTimeHint() {
-        const now = new Date(), day = now.getDay(), days = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
-        const config = calendarConfig[day];
-        document.getElementById('timeHint').innerHTML = `当前系统时间：${days[day]} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} ${day === 0 ? `<br><span style="color:#cc4c33;font-weight:700;">【今日运势】：${config.text}</span>` : `<br><span style="color:#2b1f1d;font-weight:700;">📅 打工人老黄历</span><br><span style="color:#118ab2;">【宜】${config.alms}</span> | <span style="color:#7b6865;">【忌】${config.avoid}</span>`}`;
-    }
+    <script>
+        // 核心地点池与彻底去标签化的高能量彩虹屁词库
+        const pools = {
+            "请假休息": [
+                "今天的选择太有智慧了！给生活按下暂停键，是为了以更饱满的姿态拥抱明天，尽情享受属于自己的无忧时光吧！",
+                "此时此刻，没有比彻底放松更有价值的事了。舒舒服服地休整，你的身心值得这份温柔的犒劳！",
+                "明智的选择！抛开所有的繁杂与束缚，今天你只属于自己，每一分钟的闲暇都亮晶晶的。"
+            ],
+            "Lidl": [
+                "哇！能够顺利触发这个选项，说明你完美地度过了前几日的节奏。去收获一波新鲜与快乐，犒劳一下自己吧！",
+                "今天的步伐轻盈又有节奏。向着极具性价比的生活好物出发，你总是能在平淡的日常里找到满满的获得感！",
+                "这个时间节点刚刚好，去转一圈总能发现意想不到的小惊喜，生活就是这样在精打细算中充满乐趣。"
+            ],
+            "随便转转": [
+                "没有目的地才是最棒的冒险。漫无目的地走走，生活的美好往往就藏在下一个不经意的转角处！",
+                "把身心交给风和自由，今天就用最松弛的视角去观察世界，每一朵云、每一缕风都是为你准备的礼物。",
+                "不设限的时光最迷人。随意看看、随意听听，今天是一场完全由你掌控的、没有终点的舒心漫游。"
+            ],
+            "公园散步": [
+                "去大自然里收集绿色吧！呼吸一下新鲜空气，让泥土与花草的芬芳洗净所有的疲惫，磁场瞬间充满正能量！",
+                "阳光在树叶间跳舞，今天非常适合去树荫下走走。感受自然的韵律，整个人都会变得轻盈而安宁。",
+                "踏入那片绿意，耳边是鸟鸣和风声。这是最棒的天然解压方式，今天的生活节奏由你慢慢掌控。"
+            ],
+            "巡视果园": [
+                "极具格调的去向！去看看那些蓬勃生长的生机，感受大自然孕育的饱满与甜蜜，你也会沾满一身的好福气！",
+                "在充满果香和生命力的地方走一走，心情会像熟透的果实一样甜美、充实，今天是个丰收般的好日子。",
+                "去贴近大地的脉搏，看看植物的成长。这种脚踏实地的踏实感，会给你带来加倍的笃定与快乐。"
+            ],
+            "宿舍躺平": [
+                "完美的舒适圈体验！舒舒服服地舒展身体，让疲惫在柔软的床榻间烟消云散，静止的时光同样充满能量！",
+                "今天最适合开启‘充能模式’。合理地无所事事，是最高级的精神SPA，安心享受这份宁静吧。",
+                "把世界的嘈杂关在门外，今天的主题就是彻底地舒适与安逸。放松呼吸，感受纯粹的轻松。"
+            ],
+            "IDEA": [
+                "去逛生活品超市太治愈了！置身于那些温馨的居家场景和别致的小物件中，总能淘到让日常生活更有情趣的精美法宝。",
+                "IDEA简直是提升生活幸福感的灵感圣地。去逛逛吧，挑一件心仪的生活小品，为自己的私人空间增添一份独一无二的小美好！",
+                "这里的氛围总是充满着对生活的细腻热爱。在货架间漫步，寻找那些能触动心灵的温馨细节，今天也是懂得爱自己的一天。"
+            ],
+            "老Maxi": [
+                "熟悉的传统街区步调，总能带给人无比踏实的安全感。去兜一圈，把生活的必需品安排得稳稳当当！",
+                "在熟悉温馨的氛围里慢悠悠地逛逛，挑选合心意的日常物件，这种稳妥而微小的确幸最能治愈人心。",
+                "经典的去处从不让人失望。带着轻松的心情去采购，把生活打理得井井有条，你的状态棒极了！"
+            ],
+            "新Maxi": [
+                "宽敞明亮的新空间，连逛起来的心情都会跟着变得格外开阔！去感受现代化的舒适体验，发现更多好物吧。",
+                "新环境新气象，现代感的陈列总能带来满满的视觉舒适。在宽敞的通道里漫步，尽情享受升级版的采购乐趣！",
+                "体验非常好的一趟旅程！不仅能高效置办齐所需物品，还能顺便换个心情，享受明朗舒畅的氛围。"
+            ],
+            "Lilly": [
+                "今天适合去打理一下自己的精致生活。在琳琅满目的个人护理与美好香气中，给自己多一分温柔的关爱！",
+                "逛这里总能让人心情变好。挑选一些能让状态更出彩、生活更舒适的小细节，你总是如此懂得经营生活。",
+                "生活需要一些精致的仪式感。去挑选属于你的专属舒适好物，今天整个人都要散发闪闪发亮的正能量！"
+            ],
+            "DM": [
+                "充满探索乐趣的地方！德系个护和实用生活好物的聚集地，去转转总能淘到既有创意又贴心的小法宝。",
+                "注重细节与生活品质的你，跟这里的气场最搭了。随意走走看，总有能让日常幸福感悄悄加分的小惊喜！",
+                "在这里总能找到把日子过得更精细的灵感。挑几样实用又温和的心仪小物，让今天的松弛感拉满。"
+            ],
+            "瓜果市场": [
+                "踩着时间节点出发的你太准时了！这里充满了生活最本真的烟火气，新鲜饱满的色彩看一眼就让人心情大好！",
+                "午后前的限定快乐！去挑选那些刚出水灵、带着大自然生气的瓜果，咬一口都是满满的香甜与元气。",
+                "最接地气的元气补充站。看着摊位上色彩斑斓的水果，生活的幸福感就是这么简单而直接！"
+            ],
+            "明珠": [
+                "衣食住行的大卖场中超！这里就像是一个无所不包的宝藏基地，无论你想找寻什么家乡风味或生活必需，它都能一站式满足你，逛完安全感爆棚！",
+                "作为能解决衣食住行一切需求的超级大卖场，明珠总能带给你无与伦比的归属感。进去转一圈，把生活所需的能量和物资一次性补充满满！",
+                "在明珠这个包罗万象的大卖场里，熟悉的食物、齐全的百货总能瞬间治愈一切。这不仅是一次采购，更是一场给生活全方位充电的满足之旅！"
+            ],
+            "二楼中超": [
+                "直奔目的地，满足你的味蕾期待！那些熟悉的味道拥有最神奇的治愈魔法，去带回属于你的那份专属快乐吧。",
+                "寻找舌尖上的熟悉慰藉，今天的生活多了一份让人安心的烟火气。满足感，往往就来自那一口家乡的味道。",
+                "极具针对性的幸福之旅。精准找到让你快乐的零食或食材，生活的小确幸就是这么好满足！"
+            ]
+        };
 
-    function getAvailablePool() {
-        const now = new Date(), day = now.getDay(), h = now.getHours(), m = now.getMinutes(), time = h * 60 + m;
-        if (day === 0) return { status: "empty", reason: "🔒 周日是法定闭筒充能时间！老黄历提醒：今天只准闭眼躺平！" };
-        if (time < 450) return { status: "empty", reason: "🔒 还没到 07:30 上班时间呢！签筒蓄力中，再睡个回笼觉吧~" };
-        if (time >= 690 && time < 780) return { status: "empty", reason: "🍱 11:30 - 13:00 是神圣的干饭午休时间！快去吃饭，不准纠结！" };
-        if (time >= 1020) return { status: "empty", reason: "🏃‍♂️ 已经过了 17:00 下班时间啦！签筒自动锁死，快光速溜走！" };
-        let pool = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超", "银行取钱"];
-        if (day >= 3 && day <= 6) pool.push("Lidl");
-        if (h < 14) pool.push("瓜果市场");
-        return { status: "ready", data: pool };
-    }
+        // 周日休息拦截文案
+        const sundayCompliment = "今天是专属于全身心休养的节点。万事筒也进入了静谧状态，不宜进行任何抉择与出行。平心静气、睡到自然醒、安稳地舒展身体，才是今天最正经、最舒适的头等大事！";
 
-    function spawnFloatingTexts(day) {
-        const texts = weekdayFloatingTexts[day] || ["万事如意 ✨"];
-        for (let i = 0; i < 5; i++) {
-            setTimeout(() => {
-                const span = document.createElement('span');
-                span.className = 'float-text'; span.innerText = texts[i % texts.length];
-                span.style.left = Math.random() * 75 + 10 + '%'; span.style.top = Math.random() * 55 + 20 + '%';
-                document.body.appendChild(span); setTimeout(() => span.remove(), 1200);
-            }, i * 140);
+        // 全量清除职业标签、面向所有人的通用高能量正能量文字池（抽签时作为氛围飘字）
+        const weekdayFloatTexts = {
+            1: ["周一退散✨", "摸鱼有理🐟", "保持松弛🧘", "心态超稳💎", "今天真好看🌟"],
+            2: ["元气满满🔋", "生活万岁🎉", "平和喜乐🌈", "稳步前进🚶", "状态极佳粹✨"],
+            3: ["熬过周三!✨", "能量回满🔋", "允许放松☕", "渐入佳境🍁", "一切顺遂🍀"],
+            4: ["曙光在前☀️", "心情明朗😎", "自我关怀💖", "松弛感拉满🧘", "天天好运🧧"],
+            5: ["准备迎周末🎈", "心情飞起🚀", "自在舒畅欢🎉", "今天真棒💯", "快乐满格🔋"],
+            6: ["惬意周末舒☕", "享受当下漫🍃", "生活由我🎨", "惬意舒适得✨", "万事皆宜🧧"]
+        };
+
+        // 统一在中心轴线对齐的老黄历词条库（去标签化、作息化）
+        const yiItems = ["合理摸鱼", "迟到五分钟", "狂喝冰美式", "听喜欢的歌", "看窗外发呆", "伸懒腰充能", "提前准备下班", "买个小零食", "保持平和心态", "大口呼吸新鲜空气"];
+        const jiItems = ["早起", "召开高压早会", "情绪紧紧绷绷", "过度焦虑", "强行解释", "盲目做大决定", "忽视身体信号", "步伐太急躁", "与无聊的事较真", "透支睡眠"];
+
+        // 页面初始化
+        window.onload = function() {
+            updateSystemTimeAndAlmanac();
+            setInterval(updateSystemTimeAndAlmanac, 1000);
+        };
+
+        // 核心时间与老黄历渲染逻辑
+        function updateSystemTimeAndAlmanac() {
+            const now = new Date();
+            const days = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            const dayOfWeek = now.getDay();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            document.getElementById('footerTime').innerText = `当前系统时间：${days[dayOfWeek]} ${hours}:${minutes}:${seconds}`;
+
+            // 根据星期固定更新下方老黄历
+            const btn = document.getElementById('btnDraw');
+            if (dayOfWeek === 0) {
+                btn.disabled = true;
+                btn.innerText = "今日休息";
+                renderStaticAlmanac(["安心躺平", "彻底放松", "睡到自然醒"], ["早起", "高压脑暴", "情绪紧绷"]);
+            } else {
+                btn.disabled = false;
+                btn.innerText = "虔诚摇签";
+                
+                // 确保用户指定的词条必现，其余随机组合
+                let dailyYi = ["合理摸鱼", "迟到五分钟", "狂喝冰美式"];
+                let dailyJi = ["早起", "召开高压早会", "情绪紧紧绷绷"];
+                
+                // 再随机补充2个
+                while(dailyYi.length < 4) {
+                    let r = yiItems[Math.floor(Math.random() * yiItems.length)];
+                    if(!dailyYi.includes(r)) dailyYi.push(r);
+                }
+                while(dailyJi.length < 4) {
+                    let r = jiItems[Math.floor(Math.random() * jiItems.length)];
+                    if(!dailyJi.includes(r)) dailyJi.push(r);
+                }
+                renderStaticAlmanac(dailyYi, dailyJi);
+            }
         }
-    }
 
-    function spawnGoldBurst() {
-        const emojis = ["🧧", "💰", "🎉", "✨", "🏃‍♂️", "🪙"];
-        for (let i = 0; i < 45; i++) {
-            const div = document.createElement('div');
-            div.className = 'gold-particle'; div.innerText = emojis[i % emojis.length];
-            div.style.left = '50%'; div.style.top = '40%';
-            const angle = Math.random() * Math.PI * 2, dist = Math.random() * 220 + 90;
-            div.style.setProperty('--x', `${Math.cos(angle) * dist}px`); div.style.setProperty('--y', `${Math.sin(angle) * dist + 120}px`);
-            document.body.appendChild(div); setTimeout(() => div.remove(), 2000);
+        function renderStaticAlmanac(yiArr, jiArr) {
+            document.getElementById('almanacYiList').innerHTML = yiArr.map(i => `<div class="almanac-item">${i}</div>`).join('');
+            document.getElementById('almanacJiList').innerHTML = jiArr.map(i => `<div class="almanac-item">${i}</div>`).join('');
         }
-    }
 
-    function startDraw() {
-        const wrapper = document.getElementById('wrapper'), container = document.getElementById('stickContainer'), stick = document.getElementById('luckyStick'), text = document.getElementById('luckyStickText'), btn = document.getElementById('drawBtn'), title = document.getElementById('resultTitle'), val = document.getElementById('resultValue'), comp = document.getElementById('resultCompliment');
-        const day = new Date().getDay();
-        stick.classList.remove('fly-out-anim'); title.innerText = "灵签演道通玄奥，宝箓含神赐福祥..."; val.innerText = "⚡"; comp.style.display = "none"; btn.disabled = true;
-        wrapper.classList.add('shaking'); container.classList.add('sticks-shaking');
-        if (day !== 0) spawnFloatingTexts(day);
-        setTimeout(() => {
-            wrapper.classList.remove('shaking'); container.classList.remove('sticks-shaking');
-            const res = getAvailablePool();
-            if (res.status === "empty") { title.innerText = "💤 【签筒已关闭】"; val.innerText = res.reason; btn.disabled = false; return; }
-            const isEgg = (day === 5 && Math.random() < 0.10);
-            let finalResult = "";
-            if (isEgg) { finalResult = "周五限定·天赐全免跑路签"; text.innerText = "立刻提前下班！"; stick.style.backgroundColor = "#ffca3a"; } 
-            else { const p = res.data; finalResult = p[Math.floor(Math.random() * p.length)]; text.innerText = "今日宜行"; stick.style.backgroundColor = "#118ab2"; }
-            stick.classList.add('fly-out-anim');
+        // 触发飘字氛围特效
+        function spawnFloatingText() {
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const wordBank = weekdayFloatTexts[dayOfWeek] || ["福运+", "顺遂+", "开心+"];
+            
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    const textNode = document.createElement('div');
+                    textNode.className = 'floating-text';
+                    textNode.innerText = wordBank[Math.floor(Math.random() * wordBank.length)];
+                    
+                    // 屏幕范围内较为均匀的随机分布
+                    const randomX = Math.random() * 260 + 40;
+                    const randomY = Math.random() * 120 + 80;
+                    
+                    textNode.style.left = `${randomX}px`;
+                    textNode.style.top = `${randomY}px`;
+                    textNode.style.animation = 'textFloatUp 0.9s ease-out forwards';
+                    
+                    container.appendChild(textNode);
+                    setTimeout(() => textNode.remove(), 900);
+                }, i * 150);
+            }
+        }
+
+        // 执行摇签主要控制逻辑
+        let isDrawing = false;
+        function startDivination() {
+            if (isDrawing) return;
+
+            const now = new Date();
+            const dayOfWeek = now.getDay();
+            const currentHour = now.getHours();
+
+            // 周日终极安全拦截
+            if (dayOfWeek === 0) {
+                document.getElementById('resultTitle').innerText = "今日不宜抽签";
+                document.getElementById('resultCompliment').innerText = sundayCompliment;
+                document.getElementById('resultTag').style.display = "none";
+                return;
+            }
+
+            isDrawing = true;
+            document.getElementById('btnDraw').disabled = true;
+
+            // 还原UI初始状态
+            document.getElementById('luckyStick').style.display = "none";
+            document.getElementById('luckyStick').classList.remove('anim-flyout');
+            document.getElementById('resultTag').style.display = "none";
+            document.getElementById('resultTitle').innerText = "正在窥弄天机...";
+            document.getElementById('resultCompliment').innerText = "虔诚祈愿，签筒摇晃中。正在根据此时此刻的时间流转，为你过滤命定之中的生活去向...";
+
+            // 添加灵动的错位摇晃与颠簸动画
+            document.getElementById('cylinderWrapper').classList.add('anim-shake');
+            document.getElementById('stickPool').classList.add('anim-bumpy');
+
+            // 循环制造高能飘字
+            spawnFloatingText();
+
+            // 1.2秒后停止摇晃并破空出签
             setTimeout(() => {
-                if (isEgg) { title.innerText = "👑 【天赐超级隐藏大奖】"; val.innerHTML = `<span style="color:#cc4c33; font-size:26px;">🏃‍♂️ 立刻提前下班溜溜球！</span>`; comp.innerText = "🧧 欧皇大满贯诞生！！当前系统完美温合周五超级福利！金元宝福字疯狂全屏炸裂！抛开繁杂事务，带上快乐心情，顺应天意立刻全免跑路回家！"; spawnGoldBurst(); } 
-                else { title.innerText = "🎉 乾坤定夺！今日宜 ——"; val.innerText = finalResult; const list = compliments[finalResult]; comp.innerText = list[Math.floor(Math.random() * list.length)]; }
-                comp.style.display = "block"; btn.disabled = false;
-            }, 300);
-        }, 1100);
-    }
-    updateTimeHint(); setInterval(updateTimeHint, 30000);
-</script>
+                document.getElementById('cylinderWrapper').classList.remove('anim-shake');
+                document.getElementById('stickPool').classList.remove('anim-bumpy');
+
+                // 动态构建绝对符合当前时间规则的有效词条池
+                let availableLocations = [];
+
+                // 基础常规词条
+                const baseItems = ["请假休息", "随便转转", "公园散步", "巡视果园", "宿舍躺平", "IDEA", "老Maxi", "新Maxi", "Lilly", "DM", "明珠", "二楼中超"];
+                availableLocations.push(...baseItems);
+
+                // 条件词条1：Lidl（周三至周六全天触发）
+                if (dayOfWeek >= 3 && dayOfWeek <= 6) {
+                    availableLocations.push("Lidl");
+                }
+
+                // 条件词条2：瓜果市场（14:00之前开放）
+                if (currentHour < 14) {
+                    availableLocations.push("瓜果市场");
+                }
+
+                // 随机抽取命定签
+                const finalChoice = availableLocations[Math.floor(Math.random() * availableLocations.length)];
+                
+                // 渲染飞出的宽大木牌文字
+                let shortName = finalChoice;
+                if(shortName === "二楼中超") shortName = "中超";
+                if(shortName === "请假休息") shortName = "休整";
+                if(shortName === "宿舍躺平") shortName = "躺平";
+                if(shortName === "瓜果市场") shortName = "瓜果";
+                document.getElementById('luckyStickText').innerText = shortName;
+
+                // 激活宽木签飞出特效
+                const luckyStick = document.getElementById('luckyStick');
+                luckyStick.style.display = "block";
+                luckyStick.classList.add('anim-flyout');
+
+                // 随机从专属池里抽出一句完全去标签化的高能量彩虹屁
+                const complimentsList = pools[finalChoice];
+                const selectedCompliment = complimentsList[Math.floor(Math.random() * complimentsList.length)];
+
+                // 结果面板最终呈现
+                setTimeout(() => {
+                    document.getElementById('resultTag').innerText = "上上大吉签";
+                    document.getElementById('resultTag').style.display = "inline-block";
+                    document.getElementById('resultTitle').innerText = `【今日去向：${finalChoice}】`;
+                    document.getElementById('resultCompliment').innerText = selectedCompliment;
+
+                    // 恢复按钮可用状态
+                    document.getElementById('btnDraw').disabled = false;
+                    isDrawing = false;
+                }, 400);
+
+            }, 1200);
+        }
+    </script>
 </body>
 </html>
