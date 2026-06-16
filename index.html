@@ -7,19 +7,22 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
-        /* 全局大背景：保持质感底色 */
+     /* 全局大背景：作为手机外壳的承托环境 */
         body {
             font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
             background-color: #ede2d1;
+            background-image: 
+                linear-gradient(rgba(215, 201, 180, 0.5) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(215, 201, 180, 0.5) 1px, transparent 1px);
+            background-size: 30px 30px; 
             color: #2b1f1d;
             display: flex; 
             justify-content: center; 
             align-items: center;
             min-height: 100vh; 
-            overflow: hidden; 
+            overflow: hidden; /* 阻止外层视口产生双滚动条 */
             transition: background-color 0.5s ease;
         }
-
         /* 核心：唯一的倒角圆弧框，内部统一成纯色白 */
         .phone-viewport {
             width: 100%;
